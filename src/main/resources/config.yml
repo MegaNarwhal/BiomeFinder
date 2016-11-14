@@ -1,0 +1,12 @@
+# How many points should be cached in each direction from the center point?
+points: 128
+# How many blocks should be between each point? Must be a multiple of 16.
+distance: 64
+# What is the maximum number of points that should be stored for each biome?
+maxpoints: 50
+# What radius should be used when players use the /bsearch command?
+bsearchradius: 512
+# Should BiomeFinder check for updates on Spigot?
+checkupdate: true
+# Don't change the version number, it's to notify you if the config has been updated.
+version: 2

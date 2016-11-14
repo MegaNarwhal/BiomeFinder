@@ -1,0 +1,8 @@
+PLAYER_NO_PERMISSION: '&4You do not have permission.'
+PLAYER_TELEPORTED: '&aTeleporting to %s at X: %d, Z: %d'
+BIOME_NAME_UNSPECIFIED: '&7Please specify a valid biome name.'
+WORLD_INDEX_MISSING: '&7This world''s biomes have not been indexed yet.'
+WORLD_NAME_UNSPECIFIED: 'Please specify a world name.'
+WORLD_NAME_INVALID: 'Invalid world name, or world is not loaded.'
+CACHE_BUILD_RUNNING: 'A cache is currently being built. Try again when it''s finished.'
+CONFIG_RELOADED: '&aConfig and caches reloaded.'

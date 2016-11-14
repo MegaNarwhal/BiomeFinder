@@ -1,0 +1,40 @@
+name: ${project.artifactId}
+main: ${project.groupId}.${project.artifactId}
+version: ${project.version}
+author: MegaNarwhal_
+description: Teleport to any biome instantly.
+commands:
+  bftp:
+    description: Go to a biome.
+    usage: /<command> <biome>
+    aliases: bfind
+  bcachebuild:
+    description: Build a cache of biome locations to greatly speed up biome finding.
+    usage: "/<command> <world> ([spawn] | [<x> <z>])"
+  biomereload:
+    description: Reload the config.
+    usage: /<command>
+  bsearch:
+    description: List nearby biomes.
+    usage: /<command>
+permissions:
+  biomefinder.tp:
+    description: Teleport to a biome using commands.
+    default: op
+    children:
+      biomefinder.find: true
+  biomefinder.find:
+    description: This node may be removed at some point. Use biomefinder.tp instead. Teleport to a biome using commands.
+    default: false
+  biomefinder.create:
+    description: "Create a [BiomeTP] sign."
+    default: op
+  biomefinder.create.cost:
+    description: "Create a [BiomeTP] sign that charges players for using it."
+    default: op
+  biomefinder.reload:
+    description: Reload the config.
+    default: op
+  biomefinder.bsearch:
+    description: List nearby biomes.
+    default: op
