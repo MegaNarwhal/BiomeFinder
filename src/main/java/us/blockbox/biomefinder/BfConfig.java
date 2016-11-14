@@ -1,5 +1,6 @@
 package us.blockbox.biomefinder;
 
+import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -9,6 +10,8 @@ import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -167,10 +170,12 @@ public class BfConfig{
 			plugin.saveResource(file.getName(),false);
 		}
 		if(bfLocale == null){
-			bfLocale = new BfLocale("default",file);
-		}else{
-			bfLocale.loadLocale();
+			bfLocale = new BfLocale(file.getName().replace(".yml",""));
 		}
+		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+		InputStream defConfigStream = plugin.getResource("locale.yml");
+		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+		bfLocale.loadLocale(config);
 	}
 
 	public static BfLocale getLocale(){

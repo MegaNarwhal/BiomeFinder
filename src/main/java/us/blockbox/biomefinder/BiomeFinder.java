@@ -102,7 +102,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		Set<Coord> locSet = biomeCache.get(w).get(b);
 
 		if(locSet == null || locSet.isEmpty()){
-			p.sendMessage(ChatColor.GRAY + prefix + "No " + b.toString() + " locations found.");
+			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING));
 			return false;
 		}
 
@@ -116,7 +116,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		final Location l = pickSafe(w,locList,nearby);
 
 		if(l == null){
-			p.sendMessage(ChatColor.GRAY + "Could not find a safe " + b.toString() + " location.");
+			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
 			return false;
 		}
 
