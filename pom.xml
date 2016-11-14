@@ -72,7 +72,7 @@
                 <directory>${basedir}</directory>
                 <includes>
                     <include>
-                        **/LICENSE
+                        LICENSE
                     </include>
                 </includes>
             </resource>
