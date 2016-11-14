@@ -25,7 +25,7 @@ import static us.blockbox.biomefinder.BfConfig.*;
 //Created 10/19/2016 12:29 AM
 public class BiomeFinder extends JavaPlugin implements Listener{
 
-	public static final String prefix = ChatColor.GRAY + "[BiomeFinder] ";
+	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
 	public static Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
 	static Map<World,Map<Biome,Set<Coord>>> biomeCacheOriginal;
 	private static Logger log;
@@ -129,7 +129,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		}.runTaskLater(plugin,40L);
 		boolean teleSuccess = p.teleport(l);
 		if(teleSuccess){
-			p.sendMessage(prefix + ChatColor.GREEN + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),b.toString(),l.getBlockX(),l.getBlockZ()));
+			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),b.toString(),l.getBlockX(),l.getBlockZ()));
 		}
 		return teleSuccess;
 	}

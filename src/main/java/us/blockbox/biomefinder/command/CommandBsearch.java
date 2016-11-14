@@ -9,14 +9,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeNearbySearcher;
 import us.blockbox.biomefinder.Coord;
+import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.text.DecimalFormat;
 import java.util.Map;
 
 import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
+import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 //Created 11/10/2016 12:32 AM
 public class CommandBsearch implements CommandExecutor{
@@ -24,6 +27,7 @@ public class CommandBsearch implements CommandExecutor{
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 
 	private final JavaPlugin plugin;
+	private static BfLocale locale = BfConfig.getLocale();
 
 	public CommandBsearch(JavaPlugin plugin){
 		this.plugin = plugin;
@@ -32,30 +36,30 @@ public class CommandBsearch implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender,Command command,String s,String[] strings){
 		if(!sender.hasPermission("biomefinder.bsearch")){
-			sender.sendMessage(ChatColor.DARK_RED + prefix + "You do not have permission.");
+			sender.sendMessage(prefix + locale.getMessage(PLAYER_NO_PERMISSION));
 			return true;
 		}
 		if(!(sender instanceof Player)){
-			sender.sendMessage(prefix + "You must be a player to use this command.");
+			sender.sendMessage(prefix + locale.getMessage(COMMAND_NOT_PLAYER));
 			return true;
 		}
 		final Player p = (Player)sender;
 		if(!biomeCache.containsKey(p.getWorld())){
-			sender.sendMessage(ChatColor.GRAY + "This world's biomes have not been indexed yet.");
+			sender.sendMessage(locale.getMessage(WORLD_INDEX_MISSING));
 			return true;
 		}
-		Location pLoc = p.getLocation();
-		BiomeNearbySearcher searcher = new BiomeNearbySearcher(pLoc);
+		final Location pLoc = p.getLocation();
+		final BiomeNearbySearcher searcher = new BiomeNearbySearcher(pLoc);
 		final Map<Biome,Coord> results = searcher.search();
 		final Coord pCoord = new Coord(pLoc);
-		sender.sendMessage(ChatColor.GREEN + "======| Nearby Biomes |======");
+		sender.sendMessage(locale.getMessage(NEARBY_HEADER));
 		new BukkitRunnable(){
 			@Override
 			public void run(){
 				for(Map.Entry<Biome,Coord> c : results.entrySet()){
 					final String bName = ChatColor.GREEN + c.getKey().toString() + ": " + ChatColor.RESET;
-					Coord coord = c.getValue();
-					String coords = "X " + coord.x + ", Z " + coord.z + ChatColor.GRAY + " (Distance: " + format.format(pCoord.distance(coord)) + ")";
+					final Coord coord = c.getValue();
+					final String coords = "X " + coord.x + ", Z " + coord.z + ChatColor.GRAY + " (Distance: " + format.format(pCoord.distance(coord)) + ")";
 					p.sendMessage(bName + coords);
 				}
 			}

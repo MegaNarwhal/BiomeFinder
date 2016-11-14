@@ -1,10 +1,13 @@
-PLAYER_NO_PERMISSION: '&4You do not have permission.'
-PLAYER_TELEPORTED: '&aTeleporting to %s at X: %d, Z: %d'
-BIOME_NAME_UNSPECIFIED: '&7Please specify a valid biome name.'
-BIOME_LOCATIONS_UNSAFE: "&7Could not find a safe %s location."
 BIOME_LOCATIONS_MISSING: "&7No %s locations found."
-WORLD_INDEX_MISSING: '&7This world''s biomes have not been indexed yet.'
-WORLD_NAME_UNSPECIFIED: 'Please specify a world name.'
-WORLD_NAME_INVALID: 'Invalid world name, or world is not loaded.'
+BIOME_LOCATIONS_UNSAFE: "&7Could not find a safe %s location."
+BIOME_NAME_UNSPECIFIED: '&7Please specify a valid biome name.'
 CACHE_BUILD_RUNNING: 'A cache is currently being built. Try again when it''s finished.'
+COMMAND_NOT_CONSOLE: "&7This command must be run from console."
+COMMAND_NOT_PLAYER: "You must be a player to use this command."
 CONFIG_RELOADED: '&aConfig and caches reloaded.'
+NEARBY_HEADER: '&a======| Nearby Biomes |======'
+PLAYER_NO_PERMISSION: '&7You do not have permission.'
+PLAYER_TELEPORTED: '&aTeleporting to %s at X: %d, Z: %d'
+WORLD_INDEX_MISSING: '&7This world''s biomes have not been indexed yet.'
+WORLD_NAME_INVALID: 'Invalid world name, or world is not loaded.'
+WORLD_NAME_UNSPECIFIED: 'Please specify a world name.'

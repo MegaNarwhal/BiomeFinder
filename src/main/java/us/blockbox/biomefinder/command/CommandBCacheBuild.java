@@ -18,9 +18,8 @@ import us.blockbox.biomefinder.locale.BfLocale;
 import java.util.logging.Logger;
 
 import static us.blockbox.biomefinder.BiomeFinder.hasCache;
-import static us.blockbox.biomefinder.locale.BfMessage.CACHE_BUILD_RUNNING;
-import static us.blockbox.biomefinder.locale.BfMessage.WORLD_NAME_INVALID;
-import static us.blockbox.biomefinder.locale.BfMessage.WORLD_NAME_UNSPECIFIED;
+import static us.blockbox.biomefinder.BiomeFinder.prefix;
+import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 //Created 11/10/2016 1:22 AM
 public class CommandBCacheBuild implements CommandExecutor{
@@ -39,7 +38,7 @@ public class CommandBCacheBuild implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
 		if(!(sender instanceof ConsoleCommandSender)){
-			sender.sendMessage(ChatColor.GRAY + "This command must be run from console.");
+			sender.sendMessage(prefix + locale.getMessage(COMMAND_NOT_CONSOLE));
 			return true;
 		}
 		if(CacheBuilder.cacheBuildRunning){
