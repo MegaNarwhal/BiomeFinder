@@ -102,7 +102,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		Set<Coord> locSet = biomeCache.get(w).get(b);
 
 		if(locSet == null || locSet.isEmpty()){
-			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING));
+			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
 			return false;
 		}
 

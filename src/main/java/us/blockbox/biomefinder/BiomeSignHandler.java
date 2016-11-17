@@ -13,6 +13,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.blockbox.biomefinder.locale.BfLocale;
+import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.text.DecimalFormat;
 
@@ -22,11 +24,17 @@ import static us.blockbox.biomefinder.BiomeFinder.econ;
 class BiomeSignHandler implements Listener{
 
 	private final JavaPlugin plugin;
-	private final String currencyName = econ.currencyNamePlural();
+	private final String currencyName;
 	private static final DecimalFormat format = new DecimalFormat("0.#");
+	private static BfLocale locale = BfConfig.getLocale();
 
 	BiomeSignHandler(JavaPlugin plugin){
 		this.plugin = plugin;
+		if(econ != null){
+			currencyName = econ.currencyNamePlural();
+		}else{
+			currencyName = null;
+		}
 	}
 
 	@EventHandler
@@ -55,18 +63,23 @@ class BiomeSignHandler implements Listener{
 		}
 
 		final double price = getPrice(sign);
-
-		if(econ.getBalance(p) >= price){
-			if(BiomeFinder.tpToBiome(p,biome)){
-				new BukkitRunnable(){
-					@Override
-					public void run(){
-						econ.withdrawPlayer(p,price);
-						if(price > 0){
-							p.sendMessage(ChatColor.GRAY + "You were charged " + format.format(price) + " " + currencyName + " for teleporting.");
+		if(price <= 0 || econ == null){
+			BiomeFinder.tpToBiome(p,biome);
+		}else{
+			if(econ.getBalance(p) >= price){
+				if(BiomeFinder.tpToBiome(p,biome)){
+					new BukkitRunnable(){
+						@Override
+						public void run(){
+							if(price > 0){
+								econ.withdrawPlayer(p,price);
+								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),format.format(price),currencyName));
+							}
 						}
-					}
-				}.runTaskAsynchronously(plugin);
+					}.runTaskAsynchronously(plugin);
+				}
+			}else{
+				p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
 			}
 		}
 	}
@@ -144,7 +157,7 @@ class BiomeSignHandler implements Listener{
 		if(econ.getBalance(p) >= price){
 			return true;
 		}else{
-			p.sendMessage(ChatColor.GRAY + "You don't have enough money.");
+			p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
 		}
 		return false;
 	}
