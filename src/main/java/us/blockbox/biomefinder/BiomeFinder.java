@@ -36,8 +36,10 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	private static BfLocale locale;
 
 	/*1.2.2
-	Started to add localization support.
-	BiomeFinder is now on GitHub.
+	Localization support has been added for most messages. Messages can be found in locale.yml.
+	Priced [BiomeTP] signs now tell a player when they don't have enough money.
+	BiomeFinder will load without an economy plugin installed.
+	NOTE: Players will be allowed to teleport with [BiomeTP] signs if the server is started without an economy plugin enabled.
 	*/
 
 	@Override
