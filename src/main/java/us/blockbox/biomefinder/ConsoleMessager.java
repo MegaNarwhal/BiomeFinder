@@ -22,4 +22,10 @@ public class ConsoleMessager{
 			log.info(s);
 		}
 	}
+
+	public static void success(final String... msg){
+		for(final String s : msg){
+			log.info(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString() + s + Ansi.ansi().reset().toString());
+		}
+	}
 }

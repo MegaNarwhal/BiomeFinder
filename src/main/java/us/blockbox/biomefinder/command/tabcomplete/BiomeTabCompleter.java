@@ -32,7 +32,7 @@ public class BiomeTabCompleter implements TabCompleter{
 			}
 			return tabBiomes;
 		}
-		if(args.length == 2 & command.getName().equalsIgnoreCase("bftp")){
+		if(args.length == 2 & !args[0].equals("") && command.getName().equalsIgnoreCase("bftp")){
 			return Collections.singletonList("near");
 		}
 		return Collections.emptyList();

@@ -17,7 +17,6 @@ public class CacheBuilder extends BukkitRunnable{
 
 	private final JavaPlugin plugin;
 	private final World world;
-	//distance 128, number 64
 	private static final int pointDistance = BfConfig.getDistance();
 	private static final int pointNumber = BfConfig.getPoints();
 	private final int x;
@@ -94,14 +93,14 @@ public class CacheBuilder extends BukkitRunnable{
 			BfConfig.saveBiomeCache(world);
 			for(Chunk chunk : world.getLoadedChunks()){
 				if(!world.isChunkInUse(chunk.getX(),chunk.getZ())){
-					chunk.unload(true);
+					chunk.unload(false);
 				}
 			}
 			world.save();
 			System.gc();
 			biomeLocs.clear();
 			double elapsed = (double)(System.currentTimeMillis() - startTime)/1000D;
-			ConsoleMessager.info(
+			ConsoleMessager.success(
 					"Cache building complete for world " + worldName,
 					"Elapsed time: " + elapsed + " seconds."
 			);
