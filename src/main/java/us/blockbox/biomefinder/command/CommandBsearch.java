@@ -17,7 +17,7 @@ import us.blockbox.biomefinder.locale.BfLocale;
 import java.text.DecimalFormat;
 import java.util.Map;
 
-import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
+import static us.blockbox.biomefinder.BiomeFinder.hasCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
@@ -44,7 +44,7 @@ public class CommandBsearch implements CommandExecutor{
 			return true;
 		}
 		final Player p = (Player)sender;
-		if(!biomeCache.containsKey(p.getWorld())){
+		if(!hasCache(p.getWorld())){
 			sender.sendMessage(locale.getMessage(WORLD_INDEX_MISSING));
 			return true;
 		}

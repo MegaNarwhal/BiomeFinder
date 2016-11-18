@@ -58,7 +58,7 @@ class BiomeSignHandler implements Listener{
 		}
 
 		if(!p.hasPermission("biomefinder.sign." + biome.toString().toLowerCase())){
-			p.sendMessage(ChatColor.GRAY + "You don't have permission.");
+			p.sendMessage(locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
 			return;
 		}
 
@@ -163,13 +163,14 @@ class BiomeSignHandler implements Listener{
 	}
 
 	Biome getSignBiome(String signBiome){
-		if(signBiome.trim().equals("")){
+		if(signBiome == null || signBiome.trim().equals("")){
 			return null;
 		}
+		signBiome = signBiome.toUpperCase();
 		Biome biome = BiomeFinder.parseBiome(signBiome);
 		if(biome == null){
 			for(Biome b : Biome.values()){
-				if(b.toString().startsWith(signBiome)){
+				if(b.toString().startsWith(signBiome) || b.toString().replace("_","").startsWith(signBiome)){
 					biome = b;
 					break;
 				}

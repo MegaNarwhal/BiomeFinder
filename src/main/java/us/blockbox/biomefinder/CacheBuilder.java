@@ -101,7 +101,10 @@ public class CacheBuilder extends BukkitRunnable{
 			System.gc();
 			biomeLocs.clear();
 			double elapsed = (double)(System.currentTimeMillis() - startTime)/1000D;
-			ConsoleMessager.info("Cache building complete for world " + worldName,"Elapsed time: " + elapsed + " seconds.");
+			ConsoleMessager.info(
+					"Cache building complete for world " + worldName,
+					"Elapsed time: " + elapsed + " seconds."
+			);
 			startTime = 0;
 			cacheBuildRunning = false;
 			return;

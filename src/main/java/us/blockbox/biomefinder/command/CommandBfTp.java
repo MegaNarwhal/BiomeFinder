@@ -31,7 +31,7 @@ public class CommandBfTp implements CommandExecutor{
 			return true;
 		}
 		final Player p = (Player)sender;
-		if(!biomeCache.containsKey(p.getWorld())){
+		if(!hasCache(p.getWorld())){
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.WORLD_INDEX_MISSING));
 			return true;
 		}

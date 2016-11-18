@@ -26,7 +26,7 @@ import static us.blockbox.biomefinder.BfConfig.*;
 public class BiomeFinder extends JavaPlugin implements Listener{
 
 	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
-	public static Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
+	static Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
 	static Map<World,Map<Biome,Set<Coord>>> biomeCacheOriginal;
 	private static Logger log;
 	final static Random rand = new Random();
@@ -35,11 +35,9 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	static Economy econ = null;
 	private static BfLocale locale;
 
-	/*1.2.2
-	Localization support has been added for most messages. Messages can be found in locale.yml.
-	Priced [BiomeTP] signs now tell a player when they don't have enough money.
-	BiomeFinder will load without an economy plugin installed.
-	NOTE: Players will be allowed to teleport with [BiomeTP] signs if the server is started without an economy plugin enabled.
+	/*1.2.3
+	Make no permission message for signs use message from localization.
+	/bftp and [BiomeTP] signs no longer require underscores.
 	*/
 
 	@Override
@@ -97,6 +95,10 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 
 	public static boolean hasCache(World world){
 		return biomeCache.containsKey(world);
+	}
+
+	public static Map<Biome,Set<Coord>> getCache(World world){
+		return biomeCache.get(world);
 	}
 
 	public static boolean tpToBiome(final Player p,final Biome b,final boolean nearby){
@@ -193,10 +195,16 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	}
 
 	public static Biome parseBiome(String biome){
-		final Biome b;
+		Biome b;
+		biome = biome.toUpperCase();
 		try{
-			b = Biome.valueOf(biome.toUpperCase());
+			b = Biome.valueOf(biome);
 		}catch(IllegalArgumentException e){
+			for(Biome b1 : Biome.values()){
+				if(b1.toString().replace("_","").equals(biome)){
+					return b1;
+				}
+			}
 			return null;
 		}
 		return b;
