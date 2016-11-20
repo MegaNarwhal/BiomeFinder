@@ -8,8 +8,6 @@ import us.blockbox.biomefinder.ConsoleMessager;
 import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 
-import java.util.logging.Logger;
-
 //Created 11/20/2016 1:11 AM
 public class CacheBuildListener implements Listener{
 

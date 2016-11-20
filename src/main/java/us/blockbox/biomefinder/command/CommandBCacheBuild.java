@@ -2,7 +2,6 @@ package us.blockbox.biomefinder.command;
 
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -12,7 +11,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.CacheBuilder;
-import us.blockbox.biomefinder.ConsoleMessager;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 import us.blockbox.biomefinder.locale.BfLocale;
 
