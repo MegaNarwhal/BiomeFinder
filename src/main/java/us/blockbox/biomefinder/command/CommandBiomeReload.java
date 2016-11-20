@@ -31,7 +31,7 @@ public class CommandBiomeReload implements CommandExecutor{
 			return true;
 		}
 
-		if(CacheBuilder.cacheBuildRunning){
+		if(CacheBuilder.isCacheBuildRunning()){
 			log.info("A cache is currently being built. Try again when it's finished.");
 			return true;
 		}

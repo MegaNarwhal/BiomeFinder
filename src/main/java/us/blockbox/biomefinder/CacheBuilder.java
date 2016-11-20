@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -23,13 +24,14 @@ public class CacheBuilder extends BukkitRunnable{
 	private static Map<Biome,Set<Coord>> biomeLocs = new HashMap<>();
 	private static final int pointsPerRow = pointNumber * 2 + 1;
 	private static BiomeCoord[] temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
-	public static boolean cacheBuildRunning;
+	private static boolean cacheBuildRunning;
 	private final int centerX;
 	private final int centerZ;
 	public static long startTime;
 	private final Logger log = BiomeFinder.plugin.getLogger();
 
 	private CacheBuilder(JavaPlugin plugin,World world,int x,int centerX,int centerZ){
+		CacheBuilder.cacheBuildRunning = true;
 		this.plugin = plugin;
 		this.world = world;
 		this.x = x;
@@ -38,6 +40,7 @@ public class CacheBuilder extends BukkitRunnable{
 	}
 
 	public CacheBuilder(JavaPlugin plugin,World world,int centerX,int centerZ){
+		CacheBuilder.cacheBuildRunning = true;
 		this.plugin = plugin;
 		this.world = world;
 		this.x = -pointNumber;
@@ -99,13 +102,10 @@ public class CacheBuilder extends BukkitRunnable{
 			world.save();
 			System.gc();
 			biomeLocs.clear();
-			double elapsed = (double)(System.currentTimeMillis() - startTime)/1000D;
-			ConsoleMessager.success(
-					"Cache building complete for world " + worldName,
-					"Elapsed time: " + elapsed + " seconds."
-			);
+			final double elapsed = (double)(System.currentTimeMillis() - startTime)/1000D;
 			startTime = 0;
 			cacheBuildRunning = false;
+			plugin.getServer().getPluginManager().callEvent(new CacheBuildCompleteEvent(world,centerX,centerZ,elapsed));
 			return;
 		}
 
@@ -127,5 +127,9 @@ public class CacheBuilder extends BukkitRunnable{
 				biomeLocs.put(bLoc.getKey(),new HashSet<>(locList));
 			}
 		}
+	}
+
+	public static boolean isCacheBuildRunning(){
+		return cacheBuildRunning;
 	}
 }

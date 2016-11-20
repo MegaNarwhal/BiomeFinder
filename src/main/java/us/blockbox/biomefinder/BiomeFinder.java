@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.blockbox.biomefinder.command.*;
 import us.blockbox.biomefinder.command.tabcomplete.*;
+import us.blockbox.biomefinder.listener.CacheBuildListener;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
@@ -38,6 +39,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	/*1.2.3
 	Make no permission message for signs use message from localization.
 	/bftp and [BiomeTP] signs no longer require underscores.
+	Add events for cache build start and completion.
 	*/
 
 	@Override
@@ -73,6 +75,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		loadBiomeCaches();
 
 		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this),this);
+		getServer().getPluginManager().registerEvents(new CacheBuildListener(this),this);
 	}
 
 	@Override

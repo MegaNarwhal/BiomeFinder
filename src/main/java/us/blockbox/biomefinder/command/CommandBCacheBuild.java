@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.CacheBuilder;
 import us.blockbox.biomefinder.ConsoleMessager;
+import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ public class CommandBCacheBuild implements CommandExecutor{
 			sender.sendMessage(prefix + locale.getMessage(COMMAND_NOT_CONSOLE));
 			return true;
 		}
-		if(CacheBuilder.cacheBuildRunning){
+		if(CacheBuilder.isCacheBuildRunning()){
 			log.info(locale.getMessage(CACHE_BUILD_RUNNING));
 			return true;
 		}
@@ -90,18 +91,9 @@ public class CommandBCacheBuild implements CommandExecutor{
 				centerZ = Math.round((float)centerZ/distance)*distance;
 			}
 		}
-		ConsoleMessager.info(
-				"====================================",
-				"",
-				"Building cache for: " + world.getName(),
-				"Points in each direction: " + BfConfig.getPoints(),
-				"Point distance: " + BfConfig.getDistance(),
-				"Center point: X " + centerX + ", Z " + centerZ,
-				"",
-				"===================================="
-		);
-		CacheBuilder.cacheBuildRunning = true;
+
 		CacheBuilder.startTime = System.currentTimeMillis();
+		plugin.getServer().getPluginManager().callEvent(new CacheBuildStartEvent(world,centerX,centerZ));
 		new CacheBuilder(plugin,world,centerX,centerZ).runTask(plugin);
 		return true;
 	}
