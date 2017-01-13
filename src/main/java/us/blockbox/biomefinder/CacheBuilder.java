@@ -18,12 +18,12 @@ public class CacheBuilder extends BukkitRunnable{
 
 	private final JavaPlugin plugin;
 	private final World world;
-	private static final int pointDistance = BfConfig.getDistance();
-	private static final int pointNumber = BfConfig.getPoints();
+	private static int pointDistance;
+	private static int pointNumber;
 	private final int x;
 	private static Map<Biome,Set<Coord>> biomeLocs = new HashMap<>();
-	private static final int pointsPerRow = pointNumber * 2 + 1;
-	private static BiomeCoord[] temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
+	private static int pointsPerRow;
+	private static BiomeCoord[] temp;
 	private static boolean cacheBuildRunning;
 	private final int centerX;
 	private final int centerZ;
@@ -43,9 +43,14 @@ public class CacheBuilder extends BukkitRunnable{
 		CacheBuilder.cacheBuildRunning = true;
 		this.plugin = plugin;
 		this.world = world;
-		this.x = -pointNumber;
+		final int configPoints = BfConfig.getPoints();
+		this.x = -configPoints;
 		this.centerX = centerX;
 		this.centerZ = centerZ;
+		pointNumber = configPoints;
+		pointDistance = BfConfig.getDistance();
+		pointsPerRow = pointNumber * 2 + 1;
+		temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
 	}
 
 	@Override
