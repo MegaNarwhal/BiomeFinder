@@ -30,6 +30,9 @@ public class BfConfig{
 	}
 
 	private BfConfig(){
+		plugin.saveDefaultConfig();
+		config = plugin.getConfig();
+		checkUpdate = config.getBoolean("checkupdate",true);
 	}
 
 	//private static Map<World,FileConfiguration> cacheConfigurations = new HashMap<>();
@@ -41,12 +44,6 @@ public class BfConfig{
 	private static int nearbyRadius = 512;
 	private static boolean checkUpdate = false;
 	private static BfLocale bfLocale;
-
-	static{
-		plugin.saveDefaultConfig();
-		config = plugin.getConfig();
-		checkUpdate = config.getBoolean("checkupdate",true);
-	}
 
 	public static void loadBiomeCaches(){
 		biomeCache.clear();
