@@ -31,7 +31,12 @@ class BiomeSignHandler implements Listener{
 	BiomeSignHandler(JavaPlugin plugin){
 		this.plugin = plugin;
 		if(econ != null){
-			currencyName = econ.currencyNamePlural();
+			final String currencyNameTemp = econ.currencyNamePlural();
+			if(currencyNameTemp == null){
+				currencyName = "";
+			}else{
+				currencyName = currencyNameTemp;
+			}
 		}else{
 			currencyName = null;
 		}
