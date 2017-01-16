@@ -36,10 +36,8 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	static Economy econ = null;
 	private static BfLocale locale;
 
-	/*1.2.3
-	Make no permission message for signs use message from localization.
-	/bftp and [BiomeTP] signs no longer require underscores.
-	Add events for cache build start and completion.
+	/*1.2.4
+
 	*/
 
 	@Override
@@ -47,7 +45,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		log = getLogger();
 		plugin = this;
 
-		if(getServer().getBukkitVersion().startsWith("1.10") || getServer().getBukkitVersion().startsWith("1.11")){
+		if(getServer().getBukkitVersion().startsWith("1.10") || getServer().getBukkitVersion().startsWith("1.11") || getServer().getBukkitVersion().startsWith("1.12")){
 			danger.add(Material.MAGMA);
 		}
 
