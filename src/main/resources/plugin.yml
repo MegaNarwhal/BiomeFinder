@@ -1,6 +1,7 @@
 name: ${project.artifactId}
 main: ${project.groupId}.${project.artifactId}
 version: ${project.version}
+softdepend: [Vault]
 author: MegaNarwhal_
 description: Teleport to any biome instantly.
 commands:
