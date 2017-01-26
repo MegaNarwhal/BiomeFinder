@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.11-R0.1-SNAPSHOT</version>
+            <version>1.11.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -30,9 +30,15 @@
             <version>1.14</version>
         </dependency>
         <dependency>
-            <groupId>com.onarandombox</groupId>
+            <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
             <version>2.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.pneumaticraft.commandhandler</groupId>
+                    <artifactId>CommandHandler</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.inventivetalent.spiget-update</groupId>
@@ -49,13 +55,17 @@
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
-        <repository>
+<!--        <repository>
             <id>local-repo</id>
             <url>file://${basedir}/lib</url>
-        </repository>
+        </repository>-->
         <repository>
             <id>inventive-repo</id>
             <url>https://repo.inventivetalent.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>multiverse-repo</id>
+            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
         </repository>
     </repositories>
     <build>
