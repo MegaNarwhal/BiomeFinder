@@ -11,6 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.inventivetalent.update.spiget.SpigetUpdate;
+import org.inventivetalent.update.spiget.UpdateCallback;
+import org.inventivetalent.update.spiget.comparator.VersionComparator;
 import us.blockbox.biomefinder.command.*;
 import us.blockbox.biomefinder.command.tabcomplete.*;
 import us.blockbox.biomefinder.listener.CacheBuildListener;
@@ -54,11 +57,26 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		locale = BfConfig.getLocale();
 
 		if(getCheckUpdate()){
-			try{
+/*			try{
 				new SpigotUpdater(this,30892);
 			}catch(IOException e){
 				log.info("Failed to check for update.");
-			}
+			}*/
+
+			final SpigetUpdate updater = new SpigetUpdate(this, 30892);
+			updater.setVersionComparator(VersionComparator.EQUAL);
+//			updater.setVersionComparator(VersionComparator.SEM_VER);
+			updater.checkForUpdate(new UpdateCallback() {
+				@Override
+				public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
+					ConsoleMessager.warn("An update is available! You're running " + getDescription().getVersion() + ", the latest version is " + newVersion + ".",downloadUrl,"You can disable update checking in the config.yml.");
+				}
+
+				@Override
+				public void upToDate() {
+					ConsoleMessager.success("You're running the latest version. You can disable update checking in the config.yml.");
+				}
+			});
 		}
 
 		getCommand("bsearch").setExecutor(new CommandBsearch(this));

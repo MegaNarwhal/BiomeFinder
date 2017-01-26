@@ -32,7 +32,6 @@ public class BfConfig{
 	private BfConfig(){
 		plugin.saveDefaultConfig();
 		config = plugin.getConfig();
-		checkUpdate = config.getBoolean("checkupdate",true);
 	}
 
 	//private static Map<World,FileConfiguration> cacheConfigurations = new HashMap<>();
@@ -129,6 +128,8 @@ public class BfConfig{
 		plugin.saveDefaultConfig();
 		plugin.reloadConfig();
 		config = plugin.getConfig();
+		checkUpdate = config.getBoolean("checkupdate",true);
+
 		loadLocale(new File(plugin.getDataFolder(),"locale.yml"));
 
 		if(configNeedsUpdate(config.getInt("version",0))){
