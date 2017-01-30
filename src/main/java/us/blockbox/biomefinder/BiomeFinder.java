@@ -35,7 +35,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	private static final EnumSet<Material> danger = EnumSet.of(Material.FIRE,Material.LAVA,Material.STATIONARY_LAVA,Material.CACTUS);
 	static Economy econ = null;
 	private static BfLocale locale;
-	private final BfConfig bfc = BfConfig.getInstance();
+	private BfConfig bfc;
 
 	/*1.2.4
 
@@ -48,6 +48,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		if(getServer().getBukkitVersion().startsWith("1.10") || getServer().getBukkitVersion().startsWith("1.11") || getServer().getBukkitVersion().startsWith("1.12")){
 			danger.add(Material.MAGMA);
 		}
+		bfc = BfConfig.getInstance();
 		bfc.loadConfig();
 		locale = bfc.getLocale();
 		if(bfc.getCheckUpdate()){
