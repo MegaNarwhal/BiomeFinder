@@ -26,7 +26,7 @@ class BiomeSignHandler implements Listener{
 	private final JavaPlugin plugin;
 	private final String currencyName;
 	private static final DecimalFormat format = new DecimalFormat("0.#");
-	private static BfLocale locale = BfConfig.getLocale();
+	private static final BfLocale locale = BfConfig.getInstance().getLocale();
 
 	BiomeSignHandler(JavaPlugin plugin){
 		this.plugin = plugin;

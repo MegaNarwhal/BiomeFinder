@@ -14,7 +14,7 @@ import static us.blockbox.biomefinder.BiomeFinder.*;
 //Created 11/10/2016 1:44 AM
 public class CommandBfTp implements CommandExecutor{
 
-	private BfLocale locale = BfConfig.getLocale();
+	private final BfLocale locale = BfConfig.getInstance().getLocale();
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){

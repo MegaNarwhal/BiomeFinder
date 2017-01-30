@@ -27,7 +27,7 @@ public class CommandBsearch implements CommandExecutor{
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 
 	private final JavaPlugin plugin;
-	private static BfLocale locale = BfConfig.getLocale();
+	private static final BfLocale locale = BfConfig.getInstance().getLocale();
 
 	public CommandBsearch(JavaPlugin plugin){
 		this.plugin = plugin;

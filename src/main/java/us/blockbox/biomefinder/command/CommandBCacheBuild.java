@@ -25,12 +25,12 @@ public class CommandBCacheBuild implements CommandExecutor{
 
 	private final JavaPlugin plugin;
 	private final Logger log;
-	private final BfLocale locale;
+	private final BfConfig bfc = BfConfig.getInstance();
+	private final BfLocale locale = bfc.getLocale();
 
 	public CommandBCacheBuild(JavaPlugin plugin){
 		this.plugin = plugin;
 		log = plugin.getLogger();
-		locale = BfConfig.getLocale();
 	}
 
 
@@ -53,11 +53,11 @@ public class CommandBCacheBuild implements CommandExecutor{
 			log.info(locale.getMessage(WORLD_NAME_INVALID));
 			return true;
 		}
-		if(hasCache(world) && BfConfig.getRecordedPoints(world) >= 512){
+		if(hasCache(world) && bfc.getRecordedPoints(world) >= 512){
 			log.info("World " + world.getName() + " was generated with \"points\" set to 512 or higher. If you want to regenerate it, remove the file and reload.");
 			return true;
 		}
-		final int distance = BfConfig.getDistance();
+		final int distance = bfc.getDistance();
 		int centerX = 0;
 		int centerZ = 0;
 		if(args.length >= 2){

@@ -21,7 +21,7 @@ public class CacheBuilder extends BukkitRunnable{
 	private static int pointDistance;
 	private static int pointNumber;
 	private final int x;
-	private static Map<Biome,Set<Coord>> biomeLocs = new HashMap<>();
+	private static final Map<Biome,Set<Coord>> biomeLocs = new HashMap<>();
 	private static int pointsPerRow;
 	private static BiomeCoord[] temp;
 	private static boolean cacheBuildRunning;
@@ -29,6 +29,7 @@ public class CacheBuilder extends BukkitRunnable{
 	private final int centerZ;
 	public static long startTime;
 	private final Logger log = BiomeFinder.plugin.getLogger();
+	private final BfConfig bfc = BfConfig.getInstance();
 
 	private CacheBuilder(JavaPlugin plugin,World world,int x,int centerX,int centerZ){
 		CacheBuilder.cacheBuildRunning = true;
@@ -43,12 +44,12 @@ public class CacheBuilder extends BukkitRunnable{
 		CacheBuilder.cacheBuildRunning = true;
 		this.plugin = plugin;
 		this.world = world;
-		final int configPoints = BfConfig.getPoints();
+		final int configPoints = bfc.getPoints();
 		this.x = -configPoints;
 		this.centerX = centerX;
 		this.centerZ = centerZ;
 		pointNumber = configPoints;
-		pointDistance = BfConfig.getDistance();
+		pointDistance = bfc.getDistance();
 		pointsPerRow = pointNumber * 2 + 1;
 		temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
 	}
@@ -93,12 +94,12 @@ public class CacheBuilder extends BukkitRunnable{
 			}
 			temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
 			log.info("Cleaning up points...");
-			cleanupPoints(BfConfig.getBiomePointsMax());
+			cleanupPoints(bfc.getBiomePointsMax());
 			biomeCache.put(world,new HashMap<>(biomeLocs));
 			for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeLocs.entrySet()){
 				log.info(bLoc.getKey().toString() + ": " + bLoc.getValue().size() + " entries");
 			}
-			BfConfig.saveBiomeCache(world);
+			bfc.saveBiomeCache(world);
 			for(final Chunk chunk : world.getLoadedChunks()){
 				if(!world.isChunkInUse(chunk.getX(),chunk.getZ())){
 					chunk.unload(false);

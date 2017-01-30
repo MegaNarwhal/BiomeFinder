@@ -10,7 +10,7 @@ import java.util.Set;
 //Created 11/9/2016 3:49 AM
 public class BiomeNearbySearcher{
 	private final Location location;
-	private final int radius = BfConfig.getNearbyRadius();
+	private final int radius = BfConfig.getInstance().getNearbyRadius();
 
 	public BiomeNearbySearcher(Location location){
 		this.location = location;

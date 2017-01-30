@@ -23,9 +23,9 @@ import static us.blockbox.biomefinder.BiomeFinder.plugin;
 //Created 11/10/2016 1:55 AM
 public class BfConfig{
 
-	private static BfConfig ourInstance = new BfConfig();
+	private static final BfConfig ourInstance = new BfConfig();
 
-	static BfConfig getInstance(){
+	public static BfConfig getInstance(){
 		return ourInstance;
 	}
 
@@ -34,19 +34,17 @@ public class BfConfig{
 		config = plugin.getConfig();
 	}
 
-	//private static Map<World,FileConfiguration> cacheConfigurations = new HashMap<>();
-	private static final Logger log = Bukkit.getLogger();
-	private static FileConfiguration config;
-	private static int points = 64;
-	private static int distance = 128;
-	private static int biomePointsMax = 50;
-	private static int nearbyRadius = 512;
-	private static boolean checkUpdate = false;
-	private static BfLocale bfLocale;
+	private final Logger log = Bukkit.getLogger();
+	private FileConfiguration config;
+	private int points = 64;
+	private int distance = 128;
+	private int biomePointsMax = 50;
+	private int nearbyRadius = 512;
+	private boolean checkUpdate = false;
+	private BfLocale bfLocale;
 
-	public static void loadBiomeCaches(){
+	public void loadBiomeCaches(){
 		biomeCache.clear();
-//		cacheConfigurations.clear();
 		for(final World w : Bukkit.getServer().getWorlds()){
 			final File cacheFile = new File(plugin.getDataFolder(),w.getName() + ".yml");
 			if(!cacheFile.exists() || !cacheFile.isFile()){
@@ -76,7 +74,7 @@ public class BfConfig{
 		}
 	}
 
-	public static void saveBiomeCaches(){
+	public void saveBiomeCaches(){
 		if(biomeCache.equals(biomeCacheOriginal)){
 			log.info("Cache hasn't changed, not resaving");
 			return;
@@ -86,45 +84,34 @@ public class BfConfig{
 		}
 	}
 
-	static void saveBiomeCache(World w){
+	void saveBiomeCache(World w){
 		if(!plugin.getServer().getWorlds().contains(w) || w == null){
 			return;
 		}
-
 		plugin.saveResource("blank.yml",true);
 		File blank = new File(plugin.getDataFolder(),"blank.yml");
 		FileConfiguration cacheFileNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
 		blank.delete();
-
-		cacheFileNew.set("points",BfConfig.getPoints());
-		cacheFileNew.set("distance",BfConfig.getDistance());
-
+		cacheFileNew.set("points",getPoints());
+		cacheFileNew.set("distance",getDistance());
 //Biomes
 		for(Map.Entry<Biome,Set<Coord>> bLoc : biomeCache.get(w).entrySet()){
 			String b = bLoc.getKey().toString();
 			List<String> locs = new ArrayList<>();
-
 //Locations
 			for(Coord l : bLoc.getValue()){
 				locs.add(l.x + "," + l.z);
 			}
 			cacheFileNew.set(b,locs);
 		}
-
 		try{
 			cacheFileNew.save(new File(plugin.getDataFolder(),w.getName() + ".yml"));
 		}catch(IOException e1){
 			e1.printStackTrace();
 		}
-
-//		cacheConfigurations.put(w,cacheFileNew);
 	}
 
-	private static boolean configNeedsUpdate(int version){
-		return version < 2;
-	}
-
-	public static void loadConfig(){
+	public void loadConfig(){
 		plugin.saveDefaultConfig();
 		plugin.reloadConfig();
 		config = plugin.getConfig();
@@ -163,7 +150,11 @@ public class BfConfig{
 		}
 	}
 
-	private static void loadLocale(File file){
+	private boolean configNeedsUpdate(int version){
+		return version < 2;
+	}
+
+	private void loadLocale(File file){
 		if(!file.exists() || !file.isFile()){
 			plugin.saveResource(file.getName(),false);
 		}
@@ -176,31 +167,31 @@ public class BfConfig{
 		bfLocale.loadLocale(config);
 	}
 
-	public static BfLocale getLocale(){
+	public BfLocale getLocale(){
 		return bfLocale;
 	}
 
-	public static int getPoints(){
+	public int getPoints(){
 		return points;
 	}
 
-	public static int getDistance(){
+	public int getDistance(){
 		return distance;
 	}
 
-	public static int getBiomePointsMax(){
+	public int getBiomePointsMax(){
 		return biomePointsMax;
 	}
 
-	public static int getNearbyRadius(){
+	public int getNearbyRadius(){
 		return nearbyRadius;
 	}
 
-	public static boolean getCheckUpdate(){
+	public boolean getCheckUpdate(){
 		return checkUpdate;
 	}
 
-	public static int getRecordedPoints(World w){
+	public int getRecordedPoints(World w){
 		if(w == null) return -1;
 		File f = new File(plugin.getDataFolder(),w.getName() + ".yml");
 		if(!f.isFile() || !f.exists()){

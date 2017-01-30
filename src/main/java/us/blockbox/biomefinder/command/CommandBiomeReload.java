@@ -11,14 +11,14 @@ import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.BfConfig.*;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 
 //Created 11/10/2016 1:48 AM
 public class CommandBiomeReload implements CommandExecutor{
 
 	private final Logger log;
-	private BfLocale locale = BfConfig.getLocale();
+	private final BfConfig bfc = BfConfig.getInstance();
+	private final BfLocale locale = bfc.getLocale();
 
 	public CommandBiomeReload(JavaPlugin plugin){
 		log = plugin.getLogger();
@@ -36,9 +36,9 @@ public class CommandBiomeReload implements CommandExecutor{
 			return true;
 		}
 
-		saveBiomeCaches();
-		loadBiomeCaches();
-		loadConfig();
+		bfc.saveBiomeCaches();
+		bfc.loadBiomeCaches();
+		bfc.loadConfig();
 		sender.sendMessage(prefix + locale.getMessage(BfMessage.CONFIG_RELOADED));
 		return true;
 	}

@@ -5,8 +5,8 @@ import org.bukkit.World;
 
 //Created 11/6/2016 5:38 AM
 public class Coord{
-	public int x;
-	public int z;
+	public final int x;
+	public final int z;
 
 	public Coord(int x,int z){
 		this.x = x;
