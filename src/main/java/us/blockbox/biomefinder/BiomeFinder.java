@@ -42,8 +42,8 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		return plugin;
 	}
 
-	/*1.2.4
-
+	/*1.2.5
+	Added "colorlogs" option to config.yml to choose whether console logs should ever be in color.
 	*/
 
 	@Override
@@ -55,9 +55,9 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		bfc = new BfConfig(this);
 		bfc.loadConfig();
 		if(bfc.isLogColorEnabled()){
-			console = new ColoredConsoleMessager();
+			console = new ColoredConsoleMessager(log);
 		}else{
-			console = new PlainConsoleMessager();
+			console = new PlainConsoleMessager(log);
 		}
 		if(bfc.isVersionChanged()){
 			console.warn("The config format has been changed. New options may have been added or new defaults set. Please regenerate your config to take advantage of any changes.");
