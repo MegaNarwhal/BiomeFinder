@@ -30,12 +30,17 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	static final Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
 	static Map<World,Map<Biome,Set<Coord>>> biomeCacheOriginal;
 	private static Logger log;
-	final static Random rand = new Random();
-	static JavaPlugin plugin;
+	static final Random rand = new Random();
+	static BiomeFinder plugin;
 	private static final EnumSet<Material> danger = EnumSet.of(Material.FIRE,Material.LAVA,Material.STATIONARY_LAVA,Material.CACTUS);
 	static Economy econ = null;
 	private static BfLocale locale;
 	private BfConfig bfc;
+	private ConsoleMessager console;
+
+	public static BiomeFinder getPlugin(){
+		return plugin;
+	}
 
 	/*1.2.4
 
@@ -45,11 +50,18 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	public void onEnable(){
 		log = getLogger();
 		plugin = this;
-		if(getServer().getBukkitVersion().startsWith("1.10") || getServer().getBukkitVersion().startsWith("1.11") || getServer().getBukkitVersion().startsWith("1.12")){
-			danger.add(Material.MAGMA);
-		}
-		bfc = BfConfig.getInstance();
+		Material magma = Material.getMaterial("MAGMA");
+		if(magma != null) danger.add(magma);
+		bfc = new BfConfig(this);
 		bfc.loadConfig();
+		if(bfc.isLogColorEnabled()){
+			console = new ColoredConsoleMessager();
+		}else{
+			console = new PlainConsoleMessager();
+		}
+		if(bfc.isVersionChanged()){
+			console.warn("The config format has been changed. New options may have been added or new defaults set. Please regenerate your config to take advantage of any changes.");
+		}
 		locale = bfc.getLocale();
 		if(bfc.getCheckUpdate()){
 			final SpigetUpdate updater = new SpigetUpdate(this,30892);
@@ -58,25 +70,29 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 			updater.checkForUpdate(new UpdateCallback(){
 				@Override
 				public void updateAvailable(String newVersion,String downloadUrl,boolean hasDirectDownload){
-					ConsoleMessager.warn("An update is available! You're running " + getDescription().getVersion() + ", the latest version is " + newVersion + ".",downloadUrl,"You can disable update checking in the config.yml.");
+					console.warn("An update is available! You're running " + getDescription().getVersion() + ", the latest version is " + newVersion + ".",downloadUrl,"You can disable update checking in the config.yml.");
 				}
 
 				@Override
 				public void upToDate(){
-					ConsoleMessager.success("You're running the latest version. You can disable update checking in the config.yml.");
+					console.success("You're running the latest version. You can disable update checking in the config.yml.");
 				}
 			});
 		}
+		setupCommands();
+		setupEconomy();
+		bfc.loadBiomeCaches();
+		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this),this);
+		getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
+	}
+
+	private void setupCommands(){
 		getCommand("bsearch").setExecutor(new CommandBsearch(this));
 		getCommand("bcachebuild").setExecutor(new CommandBCacheBuild(this));
 		getCommand("bcachebuild").setTabCompleter(new CacheBuildCompleter());
 		getCommand("bftp").setExecutor(new CommandBfTp());
 		getCommand("bftp").setTabCompleter(new BiomeTabCompleter());
 		getCommand("biomereload").setExecutor(new CommandBiomeReload(this));
-		setupEconomy();
-		bfc.loadBiomeCaches();
-		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this),this);
-		getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
 	}
 
 	@Override
@@ -228,5 +244,13 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		}
 
 		return true;
+	}
+
+	public BfConfig getBfConfig(){
+		return bfc;
+	}
+
+	public ConsoleMessager getConsole(){
+		return console;
 	}
 }

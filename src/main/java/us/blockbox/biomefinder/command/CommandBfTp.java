@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.blockbox.biomefinder.BfConfig;
+import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
@@ -14,7 +15,7 @@ import static us.blockbox.biomefinder.BiomeFinder.*;
 //Created 11/10/2016 1:44 AM
 public class CommandBfTp implements CommandExecutor{
 
-	private final BfLocale locale = BfConfig.getInstance().getLocale();
+	private final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){

@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
+import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 import us.blockbox.biomefinder.locale.BfLocale;
@@ -25,7 +26,7 @@ public class CommandBCacheBuild implements CommandExecutor{
 
 	private final JavaPlugin plugin;
 	private final Logger log;
-	private final BfConfig bfc = BfConfig.getInstance();
+	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
 	private final BfLocale locale = bfc.getLocale();
 
 	public CommandBCacheBuild(JavaPlugin plugin){

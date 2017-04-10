@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.blockbox.biomefinder.BfConfig;
+import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.BiomeNearbySearcher;
 import us.blockbox.biomefinder.Coord;
 import us.blockbox.biomefinder.locale.BfLocale;
@@ -27,7 +28,7 @@ public class CommandBsearch implements CommandExecutor{
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 
 	private final JavaPlugin plugin;
-	private static final BfLocale locale = BfConfig.getInstance().getLocale();
+	private static final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
 
 	public CommandBsearch(JavaPlugin plugin){
 		this.plugin = plugin;

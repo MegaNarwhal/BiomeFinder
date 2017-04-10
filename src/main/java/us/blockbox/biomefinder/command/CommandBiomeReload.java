@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
+import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
@@ -17,7 +18,7 @@ import static us.blockbox.biomefinder.BiomeFinder.prefix;
 public class CommandBiomeReload implements CommandExecutor{
 
 	private final Logger log;
-	private final BfConfig bfc = BfConfig.getInstance();
+	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
 	private final BfLocale locale = bfc.getLocale();
 
 	public CommandBiomeReload(JavaPlugin plugin){

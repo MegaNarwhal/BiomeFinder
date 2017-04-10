@@ -28,8 +28,8 @@ public class CacheBuilder extends BukkitRunnable{
 	private final int centerX;
 	private final int centerZ;
 	public static long startTime;
-	private final Logger log = BiomeFinder.plugin.getLogger();
-	private final BfConfig bfc = BfConfig.getInstance();
+	private final Logger log = BiomeFinder.getPlugin().getLogger();
+	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
 
 	private CacheBuilder(JavaPlugin plugin,World world,int x,int centerX,int centerZ){
 		CacheBuilder.cacheBuildRunning = true;

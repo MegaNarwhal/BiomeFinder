@@ -8,5 +8,7 @@ maxpoints: 50
 bsearchradius: 512
 # Should BiomeFinder check for updates on Spigot?
 checkupdate: true
+# Should BiomeFinder log to the console in color?
+colorlogs: true
 # Don't change the version number, it's to notify you if the config has been updated.
-version: 2
+version: 3

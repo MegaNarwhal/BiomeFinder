@@ -15,33 +15,32 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.ConsoleMessager.warn;
 import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
 import static us.blockbox.biomefinder.BiomeFinder.biomeCacheOriginal;
-import static us.blockbox.biomefinder.BiomeFinder.plugin;
 
 //Created 11/10/2016 1:55 AM
 public class BfConfig{
-
-	private static final BfConfig ourInstance = new BfConfig();
-
-	public static BfConfig getInstance(){
-		return ourInstance;
-	}
-
-	private BfConfig(){
-		plugin.saveDefaultConfig();
-		config = plugin.getConfig();
-	}
-
-	private final Logger log = Bukkit.getLogger();
+	private final BiomeFinder plugin;
+	private final Logger log;
 	private FileConfiguration config;
 	private int points = 64;
 	private int distance = 128;
 	private int biomePointsMax = 50;
 	private int nearbyRadius = 512;
 	private boolean checkUpdate = false;
+	private boolean logColorEnabled;
 	private BfLocale bfLocale;
+	private boolean versionChanged = false;
+
+	BfConfig(BiomeFinder plugin){
+		if(plugin == null){
+			throw new IllegalArgumentException();
+		}
+		this.plugin = plugin;
+		plugin.saveDefaultConfig();
+		config = plugin.getConfig();
+		log = plugin.getLogger();
+	}
 
 	public void loadBiomeCaches(){
 		biomeCache.clear();
@@ -50,18 +49,19 @@ public class BfConfig{
 			if(!cacheFile.exists() || !cacheFile.isFile()){
 				continue;
 			}
-			FileConfiguration conf = YamlConfiguration.loadConfiguration(cacheFile);
+			final FileConfiguration conf = YamlConfiguration.loadConfiguration(cacheFile);
 			log.info("Loading biome cache for world " + w.getName());
 //Biomes in world
-			Map<Biome,Set<Coord>> wCache = new HashMap<>();
-			for(String biome : conf.getKeys(false)){
+			final Map<Biome,Set<Coord>> wCache = new EnumMap<>(Biome.class);
+			for(final String biome : conf.getKeys(false)){
 				if(biome.equals("points") || biome.equals("distance")){
 					continue;
 				}
-				Set<Coord> locs = new HashSet<>();
+				final List<String> stringList = conf.getStringList(biome);
+				final Set<Coord> locs = new HashSet<>(stringList.size());
 //Locations in biome
-				for(String location : conf.getStringList(biome)){
-					String[] i = location.split(",");
+				for(final String location : stringList){
+					final String[] i = location.split(",");
 					locs.add(new Coord(Integer.valueOf(i[0]),Integer.valueOf(i[1])));
 				}
 				wCache.put(Biome.valueOf(biome),locs);
@@ -79,7 +79,7 @@ public class BfConfig{
 			log.info("Cache hasn't changed, not resaving");
 			return;
 		}
-		for(Map.Entry<World,Map<Biome,Set<Coord>>> e : biomeCache.entrySet()){
+		for(final Map.Entry<World,Map<Biome,Set<Coord>>> e : biomeCache.entrySet()){
 			saveBiomeCache(e.getKey());
 		}
 	}
@@ -88,18 +88,20 @@ public class BfConfig{
 		if(!plugin.getServer().getWorlds().contains(w) || w == null){
 			return;
 		}
-		plugin.saveResource("blank.yml",true);
-		File blank = new File(plugin.getDataFolder(),"blank.yml");
-		FileConfiguration cacheFileNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
-		blank.delete();
-		cacheFileNew.set("points",getPoints());
-		cacheFileNew.set("distance",getDistance());
+//		plugin.saveResource("blank.yml",true);
+//		File blank = new File(plugin.getDataFolder(),"blank.yml");
+//		FileConfiguration cacheFileNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
+		final FileConfiguration cacheFileNew = new YamlConfiguration();
+//		blank.delete();
+		cacheFileNew.set("points",points);
+		cacheFileNew.set("distance",distance);
 //Biomes
-		for(Map.Entry<Biome,Set<Coord>> bLoc : biomeCache.get(w).entrySet()){
-			String b = bLoc.getKey().toString();
-			List<String> locs = new ArrayList<>();
+		for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeCache.get(w).entrySet()){
+			final String b = bLoc.getKey().toString();
+			final Set<Coord> value = bLoc.getValue();
+			final List<String> locs = new ArrayList<>(value.size());
 //Locations
-			for(Coord l : bLoc.getValue()){
+			for(final Coord l : value){
 				locs.add(l.x + "," + l.z);
 			}
 			cacheFileNew.set(b,locs);
@@ -120,13 +122,14 @@ public class BfConfig{
 		loadLocale(new File(plugin.getDataFolder(),"locale.yml"));
 
 		if(configNeedsUpdate(config.getInt("version",0))){
-			warn("The config format has been changed. New options may have been added or new defaults set. Please regenerate your config to take advantage of any changes.");
+			versionChanged = true;
 		}
 
 		points = config.getInt("points",64);
 		distance = config.getInt("distance",128);
 		biomePointsMax = config.getInt("maxpoints",50);
 		nearbyRadius = config.getInt("bsearchradius",512);
+		logColorEnabled = config.getBoolean("colorlogs");
 
 		if(points <= 0){
 			points = 64;
@@ -135,23 +138,23 @@ public class BfConfig{
 			distance = 128;
 		}
 
-		if(distance %16 != 0){
-			log.info("Distance is not a multiple of 16, defaulting to 128.");
+		if(distance % 16 != 0){
+			log.warning("Distance is not a multiple of 16, defaulting to 128.");
 			distance = 128;
 		}
 		if(biomePointsMax < 10){
-			log.info("Maximum points cannot be less than 10, defaulting to 50.");
+			log.warning("Maximum points cannot be less than 10, defaulting to 50.");
 			biomePointsMax = 50;
 		}
 
 		if(nearbyRadius < 128){
-			log.info("Nearby search radius must be at least 128, defaulting to 128.");
+			log.warning("Nearby search radius must be at least 128, defaulting to 128.");
 			nearbyRadius = 128;
 		}
 	}
 
 	private boolean configNeedsUpdate(int version){
-		return version < 2;
+		return version < config.getDefaults().getInt("version");
 	}
 
 	private void loadLocale(File file){
@@ -161,9 +164,9 @@ public class BfConfig{
 		if(bfLocale == null){
 			bfLocale = new BfLocale(file.getName().replace(".yml",""));
 		}
-		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-		InputStream defConfigStream = plugin.getResource("locale.yml");
-		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+		final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+		final InputStream defConfigStream = plugin.getResource("locale.yml");
+		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream,Charsets.UTF_8)));
 		bfLocale.loadLocale(config);
 	}
 
@@ -193,11 +196,19 @@ public class BfConfig{
 
 	public int getRecordedPoints(World w){
 		if(w == null) return -1;
-		File f = new File(plugin.getDataFolder(),w.getName() + ".yml");
+		final File f = new File(plugin.getDataFolder(),w.getName() + ".yml");
 		if(!f.isFile() || !f.exists()){
 			return -1;
 		}
-		FileConfiguration c = YamlConfiguration.loadConfiguration(f);
+		final FileConfiguration c = YamlConfiguration.loadConfiguration(f);
 		return c.getInt("points",-1);
+	}
+
+	public boolean isLogColorEnabled(){
+		return logColorEnabled;
+	}
+
+	public boolean isVersionChanged(){
+		return versionChanged;
 	}
 }
