@@ -23,13 +23,13 @@ public class BiomeNearbySearcher{
 		//final int pointDistSquared = BfConfig.getDistance() * BfConfig.getDistance();
 		for(Map.Entry<Biome,Set<Coord>> cacheEntry : BiomeFinder.biomeCache.get(location.getWorld()).entrySet()){
 			for(Coord coord : cacheEntry.getValue()){
-				final int dist = coord.distanceSquaredInt(p);
+				final int dist = coord.distanceSquared(p);
 				if(dist > radiusSquared){
 					continue;
 				}
 				final Biome key = cacheEntry.getKey();
 				if(nearby.containsKey(key)){
-					if(nearby.get(key).distanceSquaredInt(p) > dist){
+					if(nearby.get(key).distanceSquared(p) > dist){
 						nearby.put(key,coord);
 					}
 				}else{

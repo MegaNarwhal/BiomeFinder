@@ -3,7 +3,6 @@ package us.blockbox.biomefinder;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-//Created 11/6/2016 5:38 AM
 public class Coord{
 	public final int x;
 	public final int z;
@@ -18,25 +17,34 @@ public class Coord{
 		this.z = location.getBlockZ();
 	}
 
-	public double distance(Coord var1){
-		double diffX = var1.x - this.x;
-		double diffZ = var1.z - this.z;
-		return Math.sqrt(diffX * diffX + diffZ * diffZ);
+	public double distance(Coord coord){
+		return Math.sqrt(distanceSquared(coord));
 	}
 
-	public double distanceSquared(Coord var1){
-		double diffX = var1.x - this.x;
-		double diffZ = var1.z - this.z;
-		return diffX * diffX + diffZ * diffZ;
-	}
-
-	public int distanceSquaredInt(Coord var1){
-		int diffX = var1.x - this.x;
-		int diffZ = var1.z - this.z;
+	public int distanceSquared(Coord coord){
+		int diffX = coord.x - this.x;
+		int diffZ = coord.z - this.z;
 		return diffX * diffX + diffZ * diffZ;
 	}
 
 	public Location asLocation(World w){
 		return new Location(w,x,1,z);
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+
+		Coord coord = (Coord)o;
+
+		return x == coord.x && z == coord.z;
+	}
+
+	@Override
+	public int hashCode(){
+		int result = x;
+		result = 31 * result + z;
+		return result;
 	}
 }

@@ -198,7 +198,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		CoordDistance[] cDists = new CoordDistance[coords.size()];
 		int i = 0;
 		for(Coord c : coords){
-			cDists[i] = (new CoordDistance(c,playerCoord.distanceSquaredInt(c)));
+			cDists[i] = (new CoordDistance(c,playerCoord.distanceSquared(c)));
 			i++;
 		}
 		Arrays.sort(cDists);
