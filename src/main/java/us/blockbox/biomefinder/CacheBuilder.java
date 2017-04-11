@@ -20,7 +20,7 @@ public class CacheBuilder extends BukkitRunnable{
 	private static int pointDistance;
 	private static int pointNumber;
 	private final int x;
-	private static final Map<Biome,Set<Coord>> biomeLocs = new HashMap<>();
+	private static final Map<Biome,Set<Coord>> biomeLocs = new EnumMap<>(Biome.class);
 	private static int pointsPerRow;
 	private static BiomeCoord[] temp;
 	private static boolean cacheBuildRunning;
@@ -94,7 +94,7 @@ public class CacheBuilder extends BukkitRunnable{
 			temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
 			log.info("Cleaning up points...");
 			cleanupPoints(bfc.getBiomePointsMax());
-			biomeCache.put(world,new HashMap<>(biomeLocs));
+			biomeCache.put(world,new EnumMap<>(biomeLocs));
 			for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeLocs.entrySet()){
 				log.info(bLoc.getKey().toString() + ": " + bLoc.getValue().size() + " entries");
 			}

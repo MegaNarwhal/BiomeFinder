@@ -201,7 +201,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 			i++;
 		}
 		Arrays.sort(cDists);
-		List<Coord> result = new ArrayList<>();
+		final List<Coord> result = new ArrayList<>(cDists.length);
 		for(CoordDistance cd : cDists){
 			result.add(cd.coord);
 		}

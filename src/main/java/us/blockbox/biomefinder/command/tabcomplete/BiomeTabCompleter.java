@@ -11,9 +11,10 @@ import java.util.List;
 
 public class BiomeTabCompleter implements TabCompleter{
 
-	private final List<String> biomes = new ArrayList<>();
+	private static final List<String> biomes;
 
-	public BiomeTabCompleter(){
+	static{
+		biomes = new ArrayList<>();
 		for(Biome b : Biome.values()){
 			biomes.add(b.toString());
 		}
