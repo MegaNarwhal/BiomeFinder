@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 
 import static us.blockbox.biomefinder.BiomeFinder.econ;
 
-//Created 11/6/2016 2:21 AM
 class BiomeSignHandler implements Listener{
 
 	private final JavaPlugin plugin;
@@ -44,11 +43,11 @@ class BiomeSignHandler implements Listener{
 
 	@EventHandler
 	void onInteract(PlayerInteractEvent e){
-		if(e.isCancelled() || !e.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+		if(e.isCancelled() || e.getAction() != Action.RIGHT_CLICK_BLOCK){
 			return;
 		}
 		final Block block = e.getClickedBlock();
-		if(!block.getType().equals(Material.SIGN_POST) && !block.getType().equals(Material.WALL_SIGN)){
+		if(block.getType() != Material.SIGN_POST && block.getType() != Material.WALL_SIGN){
 			return;
 		}
 		final Sign sign = (Sign)block.getState();

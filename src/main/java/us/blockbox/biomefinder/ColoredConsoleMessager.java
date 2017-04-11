@@ -4,9 +4,11 @@ import org.fusesource.jansi.Ansi;
 
 import java.util.logging.Logger;
 
-//Created 11/9/2016 3:12 AM
 public class ColoredConsoleMessager implements ConsoleMessager{
 
+	private static final String COLOR_WARN = Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString();
+	private static final String COLOR_SUCCESS = Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString();
+	private static final String COLOR_RESET = Ansi.ansi().reset().toString();
 	private final Logger logger;
 
 	public ColoredConsoleMessager(Logger logger){
@@ -21,7 +23,7 @@ public class ColoredConsoleMessager implements ConsoleMessager{
 	@Override
 	public void warn(final String... msg){
 		for(final String s : msg){
-			logger.warning(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString() + s + Ansi.ansi().reset().toString());
+			logger.warning(COLOR_WARN + s + COLOR_RESET);
 		}
 	}
 
@@ -35,7 +37,7 @@ public class ColoredConsoleMessager implements ConsoleMessager{
 	@Override
 	public void success(final String... msg){
 		for(final String s : msg){
-			logger.info(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString() + s + Ansi.ansi().reset().toString());
+			logger.info(COLOR_SUCCESS + s + COLOR_RESET);
 		}
 	}
 }

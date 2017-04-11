@@ -24,7 +24,7 @@ public class Coord{
 	public int distanceSquared(Coord coord){
 		int diffX = coord.x - this.x;
 		int diffZ = coord.z - this.z;
-		return diffX * diffX + diffZ * diffZ;
+		return (diffX * diffX) + (diffZ * diffZ);
 	}
 
 	public Location asLocation(World w){

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//Created 11/11/2016 3:48 AM
 public class CacheBuildCompleter implements TabCompleter{
 	@Override
 	public List<String> onTabComplete(CommandSender sender,Command cmd,String alias,String[] args){

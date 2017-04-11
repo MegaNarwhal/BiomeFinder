@@ -21,7 +21,6 @@ import static us.blockbox.biomefinder.BiomeFinder.hasCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
-//Created 11/10/2016 1:22 AM
 public class CommandBCacheBuild implements CommandExecutor{
 
 	private final JavaPlugin plugin;

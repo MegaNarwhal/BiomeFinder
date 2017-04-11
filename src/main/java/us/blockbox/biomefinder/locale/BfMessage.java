@@ -1,6 +1,5 @@
 package us.blockbox.biomefinder.locale;
 
-//Created 11/13/2016 3:19 AM
 public enum BfMessage{
 	BIOME_LOCATIONS_MISSING,
 	BIOME_LOCATIONS_UNSAFE,

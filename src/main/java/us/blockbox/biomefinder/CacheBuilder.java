@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
 import static us.blockbox.biomefinder.BiomeFinder.rand;
 
-//Created 11/3/2016 11:49 PM
 public class CacheBuilder extends BukkitRunnable{
 
 	private final JavaPlugin plugin;

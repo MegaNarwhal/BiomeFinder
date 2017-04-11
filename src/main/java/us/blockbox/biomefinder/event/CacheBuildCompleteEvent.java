@@ -4,7 +4,6 @@ import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-//Created 11/20/2016 12:59 AM
 public final class CacheBuildCompleteEvent extends Event{
 	private static final HandlerList handlers = new HandlerList();
 	private final World world;

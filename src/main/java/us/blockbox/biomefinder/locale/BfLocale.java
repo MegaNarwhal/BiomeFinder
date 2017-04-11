@@ -4,10 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
-//Created 11/13/2016 2:08 AM
 public class BfLocale{
 
 	private final String locale;

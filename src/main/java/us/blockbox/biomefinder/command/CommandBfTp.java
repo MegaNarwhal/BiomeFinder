@@ -12,7 +12,6 @@ import us.blockbox.biomefinder.locale.BfMessage;
 
 import static us.blockbox.biomefinder.BiomeFinder.*;
 
-//Created 11/10/2016 1:44 AM
 public class CommandBfTp implements CommandExecutor{
 
 	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();

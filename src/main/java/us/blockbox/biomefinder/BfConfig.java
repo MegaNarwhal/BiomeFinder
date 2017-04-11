@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
 import static us.blockbox.biomefinder.BiomeFinder.biomeCacheOriginal;
 
-//Created 11/10/2016 1:55 AM
 public class BfConfig{
 	private final BiomeFinder plugin;
 	private final Logger log;
@@ -85,7 +84,7 @@ public class BfConfig{
 	}
 
 	void saveBiomeCache(World w){
-		if(!plugin.getServer().getWorlds().contains(w) || w == null){
+		if(w == null || !plugin.getServer().getWorlds().contains(w)){
 			return;
 		}
 //		plugin.saveResource("blank.yml",true);

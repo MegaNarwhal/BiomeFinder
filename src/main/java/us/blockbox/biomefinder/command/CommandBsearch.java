@@ -22,7 +22,6 @@ import static us.blockbox.biomefinder.BiomeFinder.hasCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
-//Created 11/10/2016 12:32 AM
 public class CommandBsearch implements CommandExecutor{
 
 	private static final DecimalFormat format = new DecimalFormat("0.#");

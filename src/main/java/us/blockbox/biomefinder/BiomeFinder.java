@@ -23,7 +23,6 @@ import us.blockbox.biomefinder.locale.BfMessage;
 import java.util.*;
 import java.util.logging.Logger;
 
-//Created 10/19/2016 12:29 AM
 public class BiomeFinder extends JavaPlugin implements Listener{
 
 	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
@@ -92,7 +91,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		getCommand("bcachebuild").setTabCompleter(new CacheBuildCompleter());
 		getCommand("bftp").setExecutor(new CommandBfTp());
 		getCommand("bftp").setTabCompleter(new BiomeTabCompleter());
-		getCommand("biomereload").setExecutor(new CommandBiomeReload(this));
+		getCommand("biomereload").setExecutor(new CommandBiomeReload());
 	}
 
 	@Override

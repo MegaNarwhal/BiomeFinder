@@ -1,6 +1,5 @@
 package us.blockbox.biomefinder;
 
-//Created 11/11/2016 12:53 AM
 public class CoordDistance implements Comparable<CoordDistance>{
 	final Coord coord;
 	final double distance;

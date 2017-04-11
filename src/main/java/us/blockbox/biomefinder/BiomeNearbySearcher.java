@@ -3,11 +3,11 @@ package us.blockbox.biomefinder;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-//Created 11/9/2016 3:49 AM
 public class BiomeNearbySearcher{
 	private final Location location;
 	private final int radius = BiomeFinder.getPlugin().getBfConfig().getNearbyRadius();
@@ -17,7 +17,7 @@ public class BiomeNearbySearcher{
 	}
 
 	public Map<Biome,Coord> search(){
-		Map<Biome,Coord> nearby = new HashMap<>();
+		final Map<Biome,Coord> nearby = new EnumMap<>(Biome.class);
 		final Coord p = new Coord(location);
 		final int radiusSquared = radius * radius;
 		//final int pointDistSquared = BfConfig.getDistance() * BfConfig.getDistance();
