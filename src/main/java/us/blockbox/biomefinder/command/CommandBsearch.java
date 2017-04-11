@@ -28,7 +28,8 @@ public class CommandBsearch implements CommandExecutor{
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 
 	private final JavaPlugin plugin;
-	private static final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
+	private static final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
+	private static final BfLocale locale = bfc.getLocale();
 
 	public CommandBsearch(JavaPlugin plugin){
 		this.plugin = plugin;
@@ -36,12 +37,13 @@ public class CommandBsearch implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command command,String s,String[] strings){
-		if(!sender.hasPermission("biomefinder.bsearch")){
-			sender.sendMessage(prefix + locale.getMessage(PLAYER_NO_PERMISSION));
+		if(!(sender instanceof Player)){
+			final String message = BfLocale.format(prefix + locale.getMessage(COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled());
+			sender.sendMessage(message);
 			return true;
 		}
-		if(!(sender instanceof Player)){
-			sender.sendMessage(prefix + locale.getMessage(COMMAND_NOT_PLAYER));
+		if(!sender.hasPermission("biomefinder.bsearch")){
+			sender.sendMessage(prefix + locale.getMessage(PLAYER_NO_PERMISSION));
 			return true;
 		}
 		final Player p = (Player)sender;

@@ -15,12 +15,13 @@ import static us.blockbox.biomefinder.BiomeFinder.*;
 //Created 11/10/2016 1:44 AM
 public class CommandBfTp implements CommandExecutor{
 
-	private final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
+	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
+	private final BfLocale locale = bfc.getLocale();
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
 		if(!(sender instanceof Player)){
-			sender.sendMessage(prefix + "You must be a player to use this command.");
+			sender.sendMessage(BfLocale.format(prefix + locale.getMessage(BfMessage.COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled()));
 			return true;
 		}
 		if(!sender.hasPermission("biomefinder.tp")){

@@ -3,6 +3,7 @@ package us.blockbox.biomefinder.command;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
@@ -33,14 +34,16 @@ public class CommandBiomeReload implements CommandExecutor{
 		}
 
 		if(CacheBuilder.isCacheBuildRunning()){
-			log.info("A cache is currently being built. Try again when it's finished.");
+			sender.sendMessage("A cache is currently being built. Try again when it's finished.");
 			return true;
 		}
 
 		bfc.saveBiomeCaches();
 		bfc.loadBiomeCaches();
 		bfc.loadConfig();
-		sender.sendMessage(prefix + locale.getMessage(BfMessage.CONFIG_RELOADED));
+		final boolean stripColor = !bfc.isLogColorEnabled() && sender instanceof ConsoleCommandSender;
+		String message = BfLocale.format(prefix + locale.getMessage(BfMessage.CONFIG_RELOADED),stripColor);
+		sender.sendMessage(message);
 		return true;
 	}
 }

@@ -3,14 +3,15 @@ package us.blockbox.biomefinder.locale;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 //Created 11/13/2016 2:08 AM
 public class BfLocale{
 
-	final String locale;
-	private final Map<BfMessage,String> messages = new HashMap<>();
+	private final String locale;
+	private final Map<BfMessage,String> messages = new EnumMap<>(BfMessage.class);
 
 	public BfLocale(String locale){
 		this.locale = locale;
@@ -21,6 +22,13 @@ public class BfLocale{
 		for(BfMessage m : BfMessage.values()){
 			messages.put(m,ChatColor.translateAlternateColorCodes('&',config.getString(m.toString())));
 		}
+	}
+
+	public static String format(String message,boolean stripColor){
+		if(stripColor){
+			return ChatColor.stripColor(message);
+		}
+		return message;
 	}
 
 	public String getMessage(BfMessage msg){
