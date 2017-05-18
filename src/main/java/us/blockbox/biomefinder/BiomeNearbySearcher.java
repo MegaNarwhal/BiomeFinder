@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 

@@ -13,10 +13,10 @@ public class BiomeTabCompleter implements TabCompleter{
 
 	private static final List<String> biomes;
 
-	static{
+	static{ //todo use names from locale too
 		biomes = new ArrayList<>();
-		for(Biome b : Biome.values()){
-			biomes.add(b.toString());
+		for(final Biome b : Biome.values()){
+			biomes.add(b.name());
 		}
 	}
 
