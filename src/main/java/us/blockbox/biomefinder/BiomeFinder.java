@@ -1,10 +1,7 @@
 package us.blockbox.biomefinder;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -30,12 +27,13 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	static Map<World,Map<Biome,Set<Coord>>> biomeCacheOriginal;
 	private static Logger log;
 	static final Random rand = new Random();
-	static BiomeFinder plugin;
+	private static BiomeFinder plugin;
 	private static final EnumSet<Material> danger = EnumSet.of(Material.FIRE,Material.LAVA,Material.STATIONARY_LAVA,Material.CACTUS);
 	static Economy econ = null;
 	private static BfLocale locale;
 	private BfConfig bfc;
 	private ConsoleMessager console;
+	private boolean uiLibEnabled;
 
 	public static BiomeFinder getPlugin(){
 		return plugin;
@@ -49,6 +47,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	public void onEnable(){
 		log = getLogger();
 		plugin = this;
+		uiLibEnabled = Bukkit.getPluginManager().isPluginEnabled("UILib");
 		Material magma = Material.getMaterial("MAGMA");
 		if(magma != null) danger.add(magma);
 		bfc = new BfConfig(this);
@@ -152,7 +151,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		}.runTaskLater(plugin,40L);
 		boolean teleSuccess = p.teleport(l);
 		if(teleSuccess){
-			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),b.toString(),l.getBlockX(),l.getBlockZ()));
+			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ()));
 		}
 		return teleSuccess;
 	}
@@ -251,5 +250,9 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 
 	public ConsoleMessager getConsole(){
 		return console;
+	}
+
+	public boolean isUiLibEnabled(){
+		return uiLibEnabled;
 	}
 }
