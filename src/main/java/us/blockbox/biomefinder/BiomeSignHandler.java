@@ -17,6 +17,7 @@ import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.text.DecimalFormat;
+import java.util.regex.Pattern;
 
 import static us.blockbox.biomefinder.BiomeFinder.econ;
 
@@ -26,6 +27,7 @@ class BiomeSignHandler implements Listener{
 	private final String currencyName;
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 	private static final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
+	private static final Pattern nonDecimal = Pattern.compile("[^0-9.]");
 
 	BiomeSignHandler(JavaPlugin plugin){
 		this.plugin = plugin;
@@ -56,7 +58,7 @@ class BiomeSignHandler implements Listener{
 		}
 		final Player p = e.getPlayer();
 
-		Biome biome = getSignBiome(sign.getLine(2));
+		final Biome biome = getSignBiome(sign.getLine(2));
 		if(biome == null){
 			return;
 		}
@@ -93,36 +95,44 @@ class BiomeSignHandler implements Listener{
 		if(e.isCancelled()){
 			return;
 		}
-
-		if(!ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]")){
-			return;
+		if(!isValidBiomeSign(e)){
+			e.getBlock().breakNaturally();
 		}
+	}
 
+	private boolean isValidBiomeSign(SignChangeEvent e){
+		final int LINE_PRICE = 3;
+		if(!ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]")){
+			return false;
+		}
 		final Player p = e.getPlayer();
 		if(!p.hasPermission("biomefinder.create")){
-			e.getBlock().breakNaturally();
 			p.sendMessage(ChatColor.GRAY + "You don't have permission.");
-			return;
+			return false;
 		}
-
 		if(getSignBiome(e.getLine(2)) == null){
-			e.getBlock().breakNaturally();
 			p.sendMessage(ChatColor.GRAY + "Invalid biome name.");
-			return;
+			return false;
 		}
-
-		if(!e.getLine(3).trim().equals("")){
+		final String priceLine = e.getLine(LINE_PRICE);
+		if(!priceLine.trim().equals("")){
 			if(!p.hasPermission("biomefinder.create.cost")){
 				p.sendMessage(ChatColor.GRAY + "You don't have permission.");
-				e.getBlock().breakNaturally();
-				return;
+				return false;
 			}
-			try{
-				Double.parseDouble(e.getLine(3).trim().replaceAll("[^0-9.]",""));
-			}catch(NumberFormatException ex){
+			if(parsePrice(priceLine) == null){
 				p.sendMessage(ChatColor.GRAY + "Invalid price.");
-				e.getBlock().breakNaturally();
+				return false;
 			}
+		}
+		return true;
+	}
+
+	private Double parsePrice(String line){
+		try{
+			return Double.parseDouble(nonDecimal.matcher(line.trim()).replaceAll(""));
+		}catch(NumberFormatException e){
+			return null;
 		}
 	}
 
@@ -130,19 +140,15 @@ class BiomeSignHandler implements Listener{
 		if(sign.getLine(3).trim().equals("")){
 			return 0;
 		}
-
-		final double price;
-		try{
-			price = Double.parseDouble(sign.getLine(3).trim().replaceAll("[^0-9.]",""));
-		}catch(NumberFormatException ex){
+		final Double price = parsePrice(sign.getLine(3));
+		if(price == null){
 			plugin.getLogger().warning("Incorrectly formatted teleport price on sign at " + sign.getLocation().toString());
 			return -1;
 		}
-
 		return price;
 	}
 
-	private boolean enoughMoney(final Player p,final Sign sign){
+/*	private boolean enoughMoney(final Player p,final Sign sign){
 		if(sign.getLine(3).trim().equals("")){
 			return true;
 		}
@@ -150,21 +156,18 @@ class BiomeSignHandler implements Listener{
 			plugin.getLogger().warning("Sign costs are not working properly. Make sure you have an economy plugin enabled.");
 			return false;
 		}
-		final double price;
-		try{
-			price = Double.parseDouble(sign.getLine(3).trim().replaceAll("[^0-9.]",""));
-		}catch(NumberFormatException ex){
+		final Double price = parsePrice(sign.getLine(3));
+		if(price == null){
 			plugin.getLogger().warning("Incorrectly formatted teleport price on sign at " + sign.getLocation().toString());
 			return false;
 		}
-
 		if(econ.getBalance(p) >= price){
 			return true;
 		}else{
 			p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
 		}
 		return false;
-	}
+	}*/
 
 	Biome getSignBiome(String signBiome){
 		if(signBiome == null || signBiome.trim().equals("")){
