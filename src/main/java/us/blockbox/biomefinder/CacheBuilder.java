@@ -92,7 +92,7 @@ public class CacheBuilder extends BukkitRunnable{
 				}
 			}
 			temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
-			log.info("Cleaning up points...");
+			log.info("Cleaning up points..."); //todo split cleanup into pieces to avoid server freeze on large cache cleanups
 			cleanupPoints(bfc.getBiomePointsMax());
 			biomeCache.put(world,new EnumMap<>(biomeLocs));
 			for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeLocs.entrySet()){
@@ -124,12 +124,18 @@ public class CacheBuilder extends BukkitRunnable{
 	private static void cleanupPoints(int maxPoints){
 		for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeLocs.entrySet()){
 			final Set<Coord> locSet = bLoc.getValue();
-			if(locSet.size() >= maxPoints){
+			final int size = locSet.size();
+			if(size > maxPoints){
 				final List<Coord> locList = new ArrayList<>(locSet);
-				for(int i = locList.size(); i > maxPoints; i--){
-					locList.remove(rand.nextInt(i));
+				final Set<Coord> cleanedSet = new HashSet<>(maxPoints);
+				final Set<Integer> alreadyAdded = new HashSet<>(size);
+				while(cleanedSet.size() < maxPoints){
+					final int i = rand.nextInt(size);
+					if(alreadyAdded.add(i)){
+						cleanedSet.add(locList.get(i));
+					}
 				}
-				biomeLocs.put(bLoc.getKey(),new HashSet<>(locList));
+				bLoc.setValue(cleanedSet);
 			}
 		}
 	}
