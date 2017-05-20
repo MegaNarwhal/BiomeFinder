@@ -39,10 +39,6 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		return plugin;
 	}
 
-	/*1.2.5
-	Added "colorlogs" option to config.yml to choose whether console logs should ever be in color.
-	*/
-
 	@Override
 	public void onEnable(){
 		log = getLogger();
@@ -135,20 +131,20 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 			locList = new ArrayList<>(locSet);
 		}
 
-		final Location l = pickSafe(w,locList,nearby);
+		final Location l = pickSafe(w,locList,nearby); //todo don't spawn players into side of block
 
 		if(l == null){
 			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
 			return false;
 		}
 
-		p.setInvulnerable(true);
+/*		p.setInvulnerable(true);
 		new BukkitRunnable(){
 			@Override
 			public void run(){
 				p.setInvulnerable(false);
 			}
-		}.runTaskLater(plugin,40L);
+		}.runTaskLater(plugin,40L);*/
 		boolean teleSuccess = p.teleport(l);
 		if(teleSuccess){
 			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ()));

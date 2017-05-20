@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.blockbox.biomefinder.locale.BfLocale;
@@ -194,13 +195,24 @@ public class BfConfig{
 	}
 
 	public int getRecordedPoints(World w){
-		if(w == null) return -1;
+		Configuration c = getWorldConfig(w);
+		if(c == null) return -1;
+		return c.getInt("points",-1);
+	}
+
+	public int getRecordedDistance(World w){
+		Configuration c = getWorldConfig(w);
+		if(c == null) return -1;
+		return c.getInt("points",-1);
+	}
+
+	private Configuration getWorldConfig(World w){
+		if(w == null) return null;
 		final File f = new File(plugin.getDataFolder(),w.getName() + ".yml");
 		if(!f.isFile() || !f.exists()){
-			return -1;
+			return null;
 		}
-		final FileConfiguration c = YamlConfiguration.loadConfiguration(f);
-		return c.getInt("points",-1);
+		return YamlConfiguration.loadConfiguration(f);
 	}
 
 	public boolean isLogColorEnabled(){

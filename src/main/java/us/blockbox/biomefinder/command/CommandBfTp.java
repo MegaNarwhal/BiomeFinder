@@ -117,27 +117,7 @@ public class CommandBfTp implements CommandExecutor{
 		}
 		if(args.length < 1){
 			if(BiomeFinder.getPlugin().isUiLibEnabled()){ //todo uilib pagination
-				final List<Biome> biomes = new ArrayList<>(BiomeFinder.getCache(world).keySet());
-				Collections.sort(biomes,new Comparator<Biome>(){
-					@Override
-					public int compare(Biome o1,Biome o2){
-						return o1.name().compareTo(o2.name()); //todo use names from locale
-					}
-				});
-				final Component[] components = new Component[biomes.size()];
-				int i = 0;
-				for(final Biome biome : biomes){
-					String biomeName = biome.name();
-					ItemStack biomeStack = guiStacks.get(biome);
-					ItemStack itemStack = biomeStack == null ? new ItemStack(Material.SAPLING) : biomeStack.clone();
-					final String name = locale.getFriendlyName(biome);
-					ItemMeta itemMeta = itemStack.getItemMeta();
-					itemMeta.setDisplayName(name);
-					itemStack.setItemMeta(itemMeta);
-					components[i++] = new CommandItem(name,biomeName.toLowerCase(),itemStack,"bftp " + biomeName);
-				}
-				View v = InventoryView.createPaginated("Biome Selector",components,4);
-				UIPlugin.getViewManager().setView(p,v);
+				showSelectionUI(p,world);
 			}else{
 				sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 			}
@@ -156,5 +136,29 @@ public class CommandBfTp implements CommandExecutor{
 		}
 		tpToBiome(p,b);
 		return true;
+	}
+
+	private void showSelectionUI(Player p,World world){
+		final List<Biome> biomes = new ArrayList<>(BiomeFinder.getCache(world).keySet());
+		Collections.sort(biomes,new Comparator<Biome>(){
+			@Override
+			public int compare(Biome o1,Biome o2){
+				return o1.name().compareTo(o2.name()); //todo use names from locale
+			}
+		});
+		final Component[] components = new Component[biomes.size()];
+		int i = 0;
+		for(final Biome biome : biomes){
+			String biomeName = biome.name();
+			ItemStack biomeStack = guiStacks.get(biome);
+			ItemStack itemStack = biomeStack == null ? new ItemStack(Material.SAPLING) : biomeStack.clone();
+			final String name = locale.getFriendlyName(biome);
+			ItemMeta itemMeta = itemStack.getItemMeta();
+			itemMeta.setDisplayName(name);
+			itemStack.setItemMeta(itemMeta);
+			components[i++] = new CommandItem(name,biomeName.toLowerCase(),itemStack,"bftp " + biomeName);
+		}
+		View v = InventoryView.createPaginated("Biome Selector",components,4);
+		UIPlugin.getViewManager().setView(p,v);
 	}
 }
