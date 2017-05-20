@@ -16,9 +16,6 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
-import static us.blockbox.biomefinder.BiomeFinder.biomeCacheOriginal;
-
 public class BfConfig{
 	private final BiomeFinder plugin;
 	private final Logger log;
@@ -42,8 +39,8 @@ public class BfConfig{
 		log = plugin.getLogger();
 	}
 
-	public void loadBiomeCaches(){
-		biomeCache.clear();
+	public Map<World,Map<Biome,Set<Coord>>> loadBiomeCaches(){
+		final Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
 		for(final World w : Bukkit.getServer().getWorlds()){
 			final File cacheFile = new File(plugin.getDataFolder(),w.getName() + ".yml");
 			if(!cacheFile.exists() || !cacheFile.isFile()){
@@ -70,17 +67,18 @@ public class BfConfig{
 				continue;
 			}
 			biomeCache.put(w,wCache);
-			biomeCacheOriginal = new HashMap<>(biomeCache);
 		}
+		return biomeCache;
 	}
 
 	public void saveBiomeCaches(){
-		if(biomeCache.equals(biomeCacheOriginal)){
+		final CacheManager cacheManager = plugin.getCacheManager();
+		if(cacheManager.hasCacheChanged()){
 			log.info("Cache hasn't changed, not resaving");
 			return;
 		}
-		for(final Map.Entry<World,Map<Biome,Set<Coord>>> e : biomeCache.entrySet()){
-			saveBiomeCache(e.getKey());
+		for(final World w : cacheManager.getCachedWorlds()){
+			saveBiomeCache(w);
 		}
 	}
 
@@ -88,6 +86,7 @@ public class BfConfig{
 		if(w == null || !plugin.getServer().getWorlds().contains(w)){
 			return;
 		}
+		final CacheManager cacheManager = plugin.getCacheManager();
 //		plugin.saveResource("blank.yml",true);
 //		File blank = new File(plugin.getDataFolder(),"blank.yml");
 //		FileConfiguration cacheFileNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
@@ -96,7 +95,7 @@ public class BfConfig{
 		cacheFileNew.set("points",points);
 		cacheFileNew.set("distance",distance);
 //Biomes
-		for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeCache.get(w).entrySet()){
+		for(final Map.Entry<Biome,Set<Coord>> bLoc : cacheManager.getCache(w).entrySet()){
 			final String b = bLoc.getKey().toString();
 			final Set<Coord> value = bLoc.getValue();
 			final List<String> locs = new ArrayList<>(value.size());

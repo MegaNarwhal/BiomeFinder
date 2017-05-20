@@ -8,29 +8,32 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
+import us.blockbox.biomefinder.CacheManager;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.BiomeFinder.hasCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 public class CommandBCacheBuild implements CommandExecutor{
 
-	private final JavaPlugin plugin;
+	private final BiomeFinder plugin;
 	private final Logger log;
-	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
-	private final BfLocale locale = bfc.getLocale();
+	private final CacheManager cacheManager;
+	private final BfConfig bfc;
+	private final BfLocale locale;
 
-	public CommandBCacheBuild(JavaPlugin plugin){
+	public CommandBCacheBuild(BiomeFinder plugin){
 		this.plugin = plugin;
 		log = plugin.getLogger();
+		cacheManager = plugin.getCacheManager();
+		bfc = plugin.getBfConfig();
+		locale = bfc.getLocale();
 	}
 
 
@@ -53,7 +56,7 @@ public class CommandBCacheBuild implements CommandExecutor{
 			log.info(locale.getMessage(WORLD_NAME_INVALID));
 			return true;
 		}
-		if(hasCache(world) && bfc.getRecordedPoints(world) >= 512){
+		if(cacheManager.hasCache(world) && bfc.getRecordedPoints(world) >= 512){
 			log.info("World " + world.getName() + " was generated with \"points\" set to 512 or higher. If you want to regenerate it, remove the file and reload.");
 			return true;
 		}

@@ -7,6 +7,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
+import us.blockbox.biomefinder.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
@@ -16,6 +17,7 @@ public class CommandBiomeReload implements CommandExecutor{
 
 	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
 	private final BfLocale locale = bfc.getLocale();
+	private final CacheManager cacheManager = BiomeFinder.getPlugin().getCacheManager();
 
 	public CommandBiomeReload(){
 	}
@@ -33,7 +35,7 @@ public class CommandBiomeReload implements CommandExecutor{
 		}
 
 		bfc.saveBiomeCaches();
-		bfc.loadBiomeCaches();
+		cacheManager.setCache(bfc.loadBiomeCaches());
 		bfc.loadConfig();
 		final boolean stripColor = !bfc.isLogColorEnabled() && sender instanceof ConsoleCommandSender;
 		String message = BfLocale.format(prefix + locale.getMessage(BfMessage.CONFIG_RELOADED),stripColor);

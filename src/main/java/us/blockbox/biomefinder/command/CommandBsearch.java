@@ -7,18 +7,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.blockbox.biomefinder.BfConfig;
-import us.blockbox.biomefinder.BiomeFinder;
-import us.blockbox.biomefinder.BiomeNearbySearcher;
-import us.blockbox.biomefinder.Coord;
+import us.blockbox.biomefinder.*;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.text.DecimalFormat;
 import java.util.Map;
 
-import static us.blockbox.biomefinder.BiomeFinder.hasCache;
 import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
@@ -26,12 +21,16 @@ public class CommandBsearch implements CommandExecutor{
 
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 
-	private final JavaPlugin plugin;
-	private static final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
-	private static final BfLocale locale = bfc.getLocale();
+	private final BiomeFinder plugin;
+	private final BfConfig bfc;
+	private final BfLocale locale;
+	private final CacheManager cacheManager;
 
-	public CommandBsearch(JavaPlugin plugin){
+	public CommandBsearch(BiomeFinder plugin){
 		this.plugin = plugin;
+		bfc = plugin.getBfConfig();
+		locale = bfc.getLocale();
+		cacheManager = plugin.getCacheManager();
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class CommandBsearch implements CommandExecutor{
 			return true;
 		}
 		final Player p = (Player)sender;
-		if(!hasCache(p.getWorld())){
+		if(!cacheManager.hasCache(p.getWorld())){
 			sender.sendMessage(locale.getMessage(WORLD_INDEX_MISSING));
 			return true;
 		}

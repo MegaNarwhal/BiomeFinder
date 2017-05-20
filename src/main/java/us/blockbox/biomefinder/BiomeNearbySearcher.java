@@ -10,6 +10,7 @@ import java.util.Set;
 public class BiomeNearbySearcher{
 	private final Location location;
 	private final int radius = BiomeFinder.getPlugin().getBfConfig().getNearbyRadius();
+	private final CacheManager cacheManager = BiomeFinder.getPlugin().getCacheManager();
 
 	public BiomeNearbySearcher(Location location){
 		this.location = location;
@@ -20,7 +21,7 @@ public class BiomeNearbySearcher{
 		final Coord p = new Coord(location);
 		final int radiusSquared = radius * radius;
 		//final int pointDistSquared = BfConfig.getDistance() * BfConfig.getDistance();
-		for(Map.Entry<Biome,Set<Coord>> cacheEntry : BiomeFinder.biomeCache.get(location.getWorld()).entrySet()){
+		for(Map.Entry<Biome,Set<Coord>> cacheEntry : cacheManager.getCache(location.getWorld()).entrySet()){
 			for(Coord coord : cacheEntry.getValue()){
 				final int dist = coord.distanceSquared(p);
 				if(dist > radiusSquared){

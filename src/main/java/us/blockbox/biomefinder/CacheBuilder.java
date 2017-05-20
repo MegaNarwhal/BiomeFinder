@@ -10,7 +10,6 @@ import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.BiomeFinder.biomeCache;
 import static us.blockbox.biomefinder.BiomeFinder.rand;
 
 public class CacheBuilder extends BukkitRunnable{
@@ -29,9 +28,10 @@ public class CacheBuilder extends BukkitRunnable{
 	public static long startTime;
 	private final Logger log = BiomeFinder.getPlugin().getLogger();
 	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
+	private static Map<World,Map<Biome,Set<Coord>>> biomeCache;
 
 	private CacheBuilder(JavaPlugin plugin,World world,int x,int centerX,int centerZ){
-		CacheBuilder.cacheBuildRunning = true;
+		cacheBuildRunning = true;
 		this.plugin = plugin;
 		this.world = world;
 		this.x = x;
@@ -40,7 +40,8 @@ public class CacheBuilder extends BukkitRunnable{
 	}
 
 	public CacheBuilder(JavaPlugin plugin,World world,int centerX,int centerZ){
-		CacheBuilder.cacheBuildRunning = true;
+		cacheBuildRunning = true;
+		biomeCache = new HashMap<>();
 		this.plugin = plugin;
 		this.world = world;
 		final int configPoints = bfc.getPoints();
@@ -92,9 +93,10 @@ public class CacheBuilder extends BukkitRunnable{
 				}
 			}
 			temp = new BiomeCoord[(pointsPerRow) * (pointsPerRow)];
-			log.info("Cleaning up points..."); //todo split cleanup into pieces to avoid server freeze on large cache cleanups
+			log.info("Cleaning up points...");
 			cleanupPoints(bfc.getBiomePointsMax());
 			biomeCache.put(world,new EnumMap<>(biomeLocs));
+			BiomeFinder.getPlugin().getCacheManager().setCache(biomeCache);
 			for(final Map.Entry<Biome,Set<Coord>> bLoc : biomeLocs.entrySet()){
 				log.info(bLoc.getKey().toString() + ": " + bLoc.getValue().size() + " entries");
 			}

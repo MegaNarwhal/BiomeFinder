@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
+import us.blockbox.biomefinder.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 import us.blockbox.uilib.UIPlugin;
@@ -28,6 +29,7 @@ public class CommandBfTp implements CommandExecutor{
 
 	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
 	private final BfLocale locale = bfc.getLocale();
+	private final CacheManager cacheManager = BiomeFinder.getPlugin().getCacheManager();
 	private final EnumMap<Biome,ItemStack> guiStacks;
 
 	{
@@ -111,7 +113,7 @@ public class CommandBfTp implements CommandExecutor{
 		}
 		final Player p = (Player)sender;
 		final World world = p.getWorld();
-		if(!hasCache(world)){
+		if(!cacheManager.hasCache(world)){
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.WORLD_INDEX_MISSING));
 			return true;
 		}
@@ -139,7 +141,7 @@ public class CommandBfTp implements CommandExecutor{
 	}
 
 	private void showSelectionUI(Player p,World world){
-		final List<Biome> biomes = new ArrayList<>(BiomeFinder.getCache(world).keySet());
+		final List<Biome> biomes = new ArrayList<>(cacheManager.getCache(world).keySet());
 		Collections.sort(biomes,new Comparator<Biome>(){
 			@Override
 			public int compare(Biome o1,Biome o2){

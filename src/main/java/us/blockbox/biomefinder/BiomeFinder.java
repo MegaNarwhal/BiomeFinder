@@ -7,12 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
-import us.blockbox.biomefinder.command.*;
-import us.blockbox.biomefinder.command.tabcomplete.*;
+import us.blockbox.biomefinder.command.CommandBCacheBuild;
+import us.blockbox.biomefinder.command.CommandBfTp;
+import us.blockbox.biomefinder.command.CommandBiomeReload;
+import us.blockbox.biomefinder.command.CommandBsearch;
+import us.blockbox.biomefinder.command.tabcomplete.BiomeTabCompleter;
+import us.blockbox.biomefinder.command.tabcomplete.CacheBuildCompleter;
 import us.blockbox.biomefinder.listener.CacheBuildListener;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
@@ -20,11 +23,16 @@ import us.blockbox.biomefinder.locale.BfMessage;
 import java.util.*;
 import java.util.logging.Logger;
 
+/*
+1.2.7
+Massive speed increase to point cleanup for large cache builds.
+ */
+
 public class BiomeFinder extends JavaPlugin implements Listener{
 
 	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
-	static final Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
-	static Map<World,Map<Biome,Set<Coord>>> biomeCacheOriginal;
+
+	private static CacheManager cacheManager;
 	private static Logger log;
 	static final Random rand = new Random();
 	private static BiomeFinder plugin;
@@ -73,9 +81,9 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 				}
 			});
 		}
+		cacheManager = new CacheManager(bfc.loadBiomeCaches());
 		setupCommands();
 		setupEconomy();
-		bfc.loadBiomeCaches();
 		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this),this);
 		getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
 	}
@@ -107,17 +115,9 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		return econ != null;
 	}
 
-	public static boolean hasCache(World world){
-		return biomeCache.containsKey(world);
-	}
-
-	public static Map<Biome,Set<Coord>> getCache(World world){
-		return biomeCache.get(world);
-	}
-
 	public static boolean tpToBiome(final Player p,final Biome b,final boolean nearby){
 		final World w = p.getWorld();
-		final Set<Coord> locSet = biomeCache.get(w).get(b);
+		final Set<Coord> locSet = cacheManager.getCache(w).get(b);
 
 		if(locSet == null || locSet.isEmpty()){
 			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
@@ -238,6 +238,10 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		}
 
 		return true;
+	}
+
+	public CacheManager getCacheManager(){
+		return cacheManager;
 	}
 
 	public BfConfig getBfConfig(){
