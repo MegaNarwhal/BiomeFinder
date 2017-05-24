@@ -40,35 +40,41 @@ public class BfConfig{
 	}
 
 	public Map<World,Map<Biome,Set<Coord>>> loadBiomeCaches(){
-		final Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>();
-		for(final World w : Bukkit.getServer().getWorlds()){
+		final List<World> worlds = Bukkit.getServer().getWorlds();
+		final Map<World,Map<Biome,Set<Coord>>> biomeCache = new HashMap<>(worlds.size());
+		for(final World w : worlds){
 			final File cacheFile = new File(plugin.getDataFolder(),w.getName() + ".yml");
 			if(!cacheFile.exists() || !cacheFile.isFile()){
 				continue;
 			}
 			final FileConfiguration conf = YamlConfiguration.loadConfiguration(cacheFile);
-			log.info("Loading biome cache for world " + w.getName());
-//Biomes in world
-			final Map<Biome,Set<Coord>> wCache = new EnumMap<>(Biome.class);
-			for(final String biome : conf.getKeys(false)){
-				if(biome.equals("points") || biome.equals("distance")){
-					continue;
-				}
-				final List<String> stringList = conf.getStringList(biome);
-				final Set<Coord> locs = new HashSet<>(stringList.size());
-//Locations in biome
-				for(final String location : stringList){
-					final String[] i = location.split(",");
-					locs.add(new Coord(Integer.valueOf(i[0]),Integer.valueOf(i[1])));
-				}
-				wCache.put(Biome.valueOf(biome),locs);
-			}
+			final Map<Biome,Set<Coord>> wCache = loadBiomeCache(w,conf);
 			if(wCache.isEmpty()){
 				continue;
 			}
 			biomeCache.put(w,wCache);
 		}
 		return biomeCache;
+	}
+
+	private Map<Biome,Set<Coord>> loadBiomeCache(World w,FileConfiguration conf){
+		log.info("Loading biome cache for world " + w.getName());
+//Biomes in world
+		final Map<Biome,Set<Coord>> wCache = new EnumMap<>(Biome.class);
+		for(final String biome : conf.getKeys(false)){
+			if(biome.equals("points") || biome.equals("distance")){
+				continue;
+			}
+			final List<String> stringList = conf.getStringList(biome);
+			final Set<Coord> locs = new HashSet<>(stringList.size());
+//Locations in biome
+			for(final String location : stringList){
+				final String[] i = location.split(",");
+				locs.add(new Coord(Integer.valueOf(i[0]),Integer.valueOf(i[1])));
+			}
+			wCache.put(Biome.valueOf(biome),locs);
+		}
+		return wCache;
 	}
 
 	public void saveBiomeCaches(){
