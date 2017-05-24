@@ -4,7 +4,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
@@ -22,15 +21,18 @@ import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 1.2.7
 Massive speed increase to point cleanup for large cache builds.
+Fix players not being able to place signs that aren't BiomeTP signs.
  */
 
-public class BiomeFinder extends JavaPlugin implements Listener{
-
+public class BiomeFinder extends JavaPlugin{
 	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
+	private static final Matcher underscore = Pattern.compile("_").matcher("");
 
 	private static CacheManager cacheManager;
 	private static Logger log;
@@ -52,7 +54,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		log = getLogger();
 		plugin = this;
 		uiLibEnabled = Bukkit.getPluginManager().isPluginEnabled("UILib");
-		Material magma = Material.getMaterial("MAGMA");
+		final Material magma = Material.getMaterial("MAGMA");
 		if(magma != null) danger.add(magma);
 		bfc = new BfConfig(this);
 		bfc.loadConfig();
@@ -107,7 +109,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		if(getServer().getPluginManager().getPlugin("Vault") == null){
 			return false;
 		}
-		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+		final RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if(rsp == null){
 			return false;
 		}
@@ -145,7 +147,7 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 				p.setInvulnerable(false);
 			}
 		}.runTaskLater(plugin,40L);*/
-		boolean teleSuccess = p.teleport(l);
+		final boolean teleSuccess = p.teleport(l);
 		if(teleSuccess){
 			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ()));
 		}
@@ -158,46 +160,57 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 
 	private static Location pickSafe(World world,List<Coord> coords,boolean nearby){
 		Coord c;
-		Location l = null;
-		int tries = 0;
+//		int tries = 0;
 		final int maxtries = coords.size();
-		while(tries < maxtries){
+		Location l;
+		for(int tries = 0; tries < maxtries; tries++){
 			c = coords.get(nearby ? tries : rand.nextInt(maxtries - tries));
 			l = c.asLocation(world);
 			if(world.getEnvironment() == World.Environment.NETHER){
-				final int x = l.getBlockX();
-				final int z = l.getBlockZ();
-				for(int y = 8; y < 126; y++){
-					if(world.getBlockAt(x,y,z).getType() == Material.AIR && world.getBlockAt(x,y + 1,z).getType() == Material.AIR){
-						l.setY(y);
-						break;
-					}
+				int yNew = find2BlockTallY(world,l);
+				if(yNew == -1){
+					continue; //there is no open spot for player here
+				}else{
+					l.setY(yNew);
 				}
 			}else{
 				l.setY(world.getHighestBlockYAt(l.getBlockX(),l.getBlockZ()) + 1);
 			}
 			if(isSafe(l)){
-				break;
+				return l;
 			}
 			coords.remove(c);
-			tries++;
 		}
-		if(tries >= maxtries){
-			return null;
-		}
-		return l;
+		return null;
 	}
 
-	private static List<Coord> getNearbyCoords(Coord playerCoord,Set<Coord> coords){
-		CoordDistance[] cDists = new CoordDistance[coords.size()];
+	private static int find2BlockTallY(World world,Location l){
+		final int x = l.getBlockX();
+		final int z = l.getBlockZ();
+		for(int y = 8; y < 126; y++){
+			if(world.getBlockAt(x,y,z).getType() == Material.AIR && world.getBlockAt(x,y + 1,z).getType() == Material.AIR){
+				return y;
+			}
+		}
+		return -1;
+	}
+
+	private static List<Coord> getNearbyCoords(final Coord playerCoord,Set<Coord> coords){
+//		Comparator<Coord> comp = new Comparator<Coord>(){
+//			@Override
+//			public int compare(Coord o1,Coord o2){
+//				return playerCoord.distanceSquared(o1) - playerCoord.distanceSquared(o2);
+//			}
+//		};//todo
+		final CoordDistance[] cDists = new CoordDistance[coords.size()];
 		int i = 0;
-		for(Coord c : coords){
+		for(final Coord c : coords){
 			cDists[i] = (new CoordDistance(c,playerCoord.distanceSquared(c)));
 			i++;
 		}
 		Arrays.sort(cDists);
 		final List<Coord> result = new ArrayList<>(cDists.length);
-		for(CoordDistance cd : cDists){
+		for(final CoordDistance cd : cDists){
 			result.add(cd.coord);
 		}
 		if(result.isEmpty()){
@@ -207,13 +220,13 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 	}
 
 	public static Biome parseBiome(String biome){
-		Biome b;
+		final Biome b;
 		biome = biome.toUpperCase();
 		try{
 			b = Biome.valueOf(biome);
-		}catch(IllegalArgumentException e){
-			for(Biome b1 : Biome.values()){
-				if(b1.toString().replace("_","").equals(biome)){
+		}catch(final IllegalArgumentException e){
+			for(final Biome b1 : Biome.values()){
+				if(underscore.reset(b1.name()).replaceAll("").equals(biome)){
 					return b1;
 				}
 			}
@@ -230,13 +243,15 @@ public class BiomeFinder extends JavaPlugin implements Listener{
 		for(int xi = x - 1; xi <= x; xi++){
 			for(int zi = z - 1; zi <= z; zi++){
 				//log.info(xi + " " + y + " " + zi + " " + w.getBlockAt(xi,y,zi).getType().toString());
-				if(danger.contains(w.getBlockAt(xi,y,zi).getType()) || danger.contains(w.getBlockAt(xi,y - 1,zi).getType())){
-					log.info("Unsafe teleport location at X: " + x + ", Z: " + z);
-					return false;
+				for(int yi = -1; yi < 1; yi++){
+//					System.out.println(xi + " " + yi + " " + zi);
+					if(danger.contains(w.getBlockAt(xi,y + yi,zi).getType())){
+						log.info("Unsafe teleport location at X: " + x + ", Z: " + z);
+						return false;
+					}
 				}
 			}
 		}
-
 		return true;
 	}
 
