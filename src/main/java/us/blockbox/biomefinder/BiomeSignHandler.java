@@ -95,16 +95,14 @@ class BiomeSignHandler implements Listener{
 		if(e.isCancelled()){
 			return;
 		}
-		if(!isValidBiomeSign(e)){
+		if(ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]") && !isValidBiomeSign(e)){
 			e.getBlock().breakNaturally();
 		}
 	}
 
 	private boolean isValidBiomeSign(SignChangeEvent e){
 		final int LINE_PRICE = 3;
-		if(!ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]")){
-			return false;
-		}
+
 		final Player p = e.getPlayer();
 		if(!p.hasPermission("biomefinder.create")){
 			p.sendMessage(ChatColor.GRAY + "You don't have permission.");
