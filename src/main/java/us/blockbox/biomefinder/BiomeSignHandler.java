@@ -1,5 +1,6 @@
 package us.blockbox.biomefinder;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -19,7 +20,6 @@ import us.blockbox.biomefinder.locale.BfMessage;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
-import static us.blockbox.biomefinder.BiomeFinder.econ;
 
 class BiomeSignHandler implements Listener{
 
@@ -28,11 +28,13 @@ class BiomeSignHandler implements Listener{
 	private static final DecimalFormat format = new DecimalFormat("0.#");
 	private static final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
 	private static final Pattern nonDecimal = Pattern.compile("[^0-9.]");
+	private final Economy economy;
 
-	BiomeSignHandler(JavaPlugin plugin){
+	BiomeSignHandler(JavaPlugin plugin,Economy economy){
 		this.plugin = plugin;
-		if(econ != null){
-			final String currencyNameTemp = econ.currencyNamePlural();
+		this.economy = economy;
+		if(economy != null){
+			final String currencyNameTemp = economy.currencyNamePlural();
 			if(currencyNameTemp == null){
 				currencyName = "";
 			}else{
@@ -69,16 +71,16 @@ class BiomeSignHandler implements Listener{
 		}
 
 		final double price = getPrice(sign);
-		if(price <= 0 || econ == null){
+		if(price <= 0 || economy == null){
 			BiomeFinder.tpToBiome(p,biome);
 		}else{
-			if(econ.getBalance(p) >= price){
+			if(economy.getBalance(p) >= price){
 				if(BiomeFinder.tpToBiome(p,biome)){
 					new BukkitRunnable(){
 						@Override
 						public void run(){
 							if(price > 0){
-								econ.withdrawPlayer(p,price);
+								economy.withdrawPlayer(p,price);
 								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),format.format(price),currencyName));
 							}
 						}

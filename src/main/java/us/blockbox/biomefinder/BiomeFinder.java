@@ -33,13 +33,12 @@ Fix players not being able to place signs that aren't BiomeTP signs.
 public class BiomeFinder extends JavaPlugin{
 	public static final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
 	private static final Matcher underscore = Pattern.compile("_").matcher("");
-
 	private static CacheManager cacheManager;
 	private static Logger log;
 	static final Random rand = new Random();
 	private static BiomeFinder plugin;
 	private static final EnumSet<Material> danger = EnumSet.of(Material.FIRE,Material.LAVA,Material.STATIONARY_LAVA,Material.CACTUS);
-	static Economy econ = null;
+	private Economy economy;
 	private static BfLocale locale;
 	private BfConfig bfc;
 	private ConsoleMessager console;
@@ -68,26 +67,30 @@ public class BiomeFinder extends JavaPlugin{
 		}
 		locale = bfc.getLocale();
 		if(bfc.getCheckUpdate()){
-			final SpigetUpdate updater = new SpigetUpdate(this,30892);
-			updater.setVersionComparator(VersionComparator.EQUAL);
-//			updater.setVersionComparator(VersionComparator.SEM_VER);
-			updater.checkForUpdate(new UpdateCallback(){
-				@Override
-				public void updateAvailable(String newVersion,String downloadUrl,boolean hasDirectDownload){
-					console.warn("An update is available! You're running " + getDescription().getVersion() + ", the latest version is " + newVersion + ".",downloadUrl,"You can disable update checking in the config.yml.");
-				}
-
-				@Override
-				public void upToDate(){
-					console.success("You're running the latest version. You can disable update checking in the config.yml.");
-				}
-			});
+			checkUpdate();
 		}
 		cacheManager = new CacheManager(bfc.loadBiomeCaches());
 		setupCommands();
 		setupEconomy();
-		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this),this);
+		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this,economy),this);
 		getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
+	}
+
+	private void checkUpdate(){
+		final SpigetUpdate updater = new SpigetUpdate(this,30892);
+		updater.setVersionComparator(VersionComparator.EQUAL);
+//			updater.setVersionComparator(VersionComparator.SEM_VER);
+		updater.checkForUpdate(new UpdateCallback(){
+			@Override
+			public void updateAvailable(String newVersion,String downloadUrl,boolean hasDirectDownload){
+				console.warn("An update is available! You're running " + getDescription().getVersion() + ", the latest version is " + newVersion + ".",downloadUrl,"You can disable update checking in the config.yml.");
+			}
+
+			@Override
+			public void upToDate(){
+				console.success("You're running the latest version. You can disable update checking in the config.yml.");
+			}
+		});
 	}
 
 	private void setupCommands(){
@@ -113,8 +116,8 @@ public class BiomeFinder extends JavaPlugin{
 		if(rsp == null){
 			return false;
 		}
-		econ = rsp.getProvider();
-		return econ != null;
+		economy = rsp.getProvider();
+		return economy != null;
 	}
 
 	public static boolean tpToBiome(final Player p,final Biome b,final boolean nearby){
