@@ -125,19 +125,26 @@ public class CommandBfTp implements CommandExecutor{
 			}
 			return true;
 		}
-		Biome b = parseBiome(args[0]);
+		final Biome b = parseBiome(args[0]);
 		if(b == null){
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
-			return true;
+		}else{
+			final LocationPreference pref = getLocationPreference(args);
+			tpToBiome(p,b,pref);
 		}
+		return true;
+	}
+
+	private static LocationPreference getLocationPreference(String[] args){
 		if(args.length >= 2){
-			if(args[1].toLowerCase().startsWith("near")){
-				tpToBiome(p,b,true);
-				return true;
+			final String distanceArg = args[1].toLowerCase();
+			if(distanceArg.startsWith("near")){
+				return LocationPreference.NEAR;
+			}else if(distanceArg.startsWith("far")){
+				return LocationPreference.FAR;
 			}
 		}
-		tpToBiome(p,b);
-		return true;
+		return LocationPreference.ANY;
 	}
 
 	private void showSelectionUI(Player p,World world){

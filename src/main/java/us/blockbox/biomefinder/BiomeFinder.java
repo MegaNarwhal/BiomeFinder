@@ -25,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
+1.2.8
+Add "far" keyword to /bftp
 1.2.7
 Massive speed increase to point cleanup for large cache builds.
 Fix players not being able to place signs that aren't BiomeTP signs.
@@ -120,7 +122,13 @@ public class BiomeFinder extends JavaPlugin{
 		return economy != null;
 	}
 
-	public static boolean tpToBiome(final Player p,final Biome b,final boolean nearby){
+	public enum LocationPreference{
+		NEAR,
+		FAR,
+		ANY
+	}
+
+	public static boolean tpToBiome(final Player p,final Biome b,final LocationPreference preference){
 		final World w = p.getWorld();
 		final Set<Coord> locSet = cacheManager.getCache(w).get(b);
 
@@ -130,13 +138,13 @@ public class BiomeFinder extends JavaPlugin{
 		}
 
 		final List<Coord> locList;
-		if(nearby){
-			locList = getNearbyCoords(new Coord(p.getLocation()),locSet);
-		}else{
+		if(preference == LocationPreference.ANY){
 			locList = new ArrayList<>(locSet);
+		}else{
+			locList = getSortedCoords(new Coord(p.getLocation()),locSet,preference);
 		}
 
-		final Location l = pickSafe(w,locList,nearby); //todo don't spawn players into side of block
+		final Location l = pickSafe(w,locList,preference != LocationPreference.ANY); //todo don't spawn players into side of block
 
 		if(l == null){
 			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
@@ -158,16 +166,16 @@ public class BiomeFinder extends JavaPlugin{
 	}
 
 	public static boolean tpToBiome(final Player p,final Biome b){
-		return tpToBiome(p,b,false);
+		return tpToBiome(p,b,LocationPreference.ANY);
 	}
 
-	private static Location pickSafe(World world,List<Coord> coords,boolean nearby){
+	private static Location pickSafe(World world,List<Coord> coords,boolean sorted){
 		Coord c;
 //		int tries = 0;
 		final int maxtries = coords.size();
 		Location l;
 		for(int tries = 0; tries < maxtries; tries++){
-			c = coords.get(nearby ? tries : rand.nextInt(maxtries - tries));
+			c = coords.get(sorted ? tries : rand.nextInt(maxtries - tries));
 			l = c.asLocation(world);
 			if(world.getEnvironment() == World.Environment.NETHER){
 				int yNew = find2BlockTallY(world,l);
@@ -198,8 +206,8 @@ public class BiomeFinder extends JavaPlugin{
 		return -1;
 	}
 
-	private static List<Coord> getNearbyCoords(final Coord playerCoord,Set<Coord> coords){
-//		Comparator<Coord> comp = new Comparator<Coord>(){
+	private static List<Coord> getSortedCoords(final Coord playerCoord,Set<Coord> coords,LocationPreference distance){
+		//		Comparator<Coord> comp = new Comparator<Coord>(){
 //			@Override
 //			public int compare(Coord o1,Coord o2){
 //				return playerCoord.distanceSquared(o1) - playerCoord.distanceSquared(o2);
@@ -211,13 +219,14 @@ public class BiomeFinder extends JavaPlugin{
 			cDists[i] = (new CoordDistance(c,playerCoord.distanceSquared(c)));
 			i++;
 		}
-		Arrays.sort(cDists);
+		if(distance == LocationPreference.NEAR){
+			Arrays.sort(cDists);
+		}else if(distance == LocationPreference.FAR){
+			Arrays.sort(cDists,Collections.<CoordDistance>reverseOrder());
+		}
 		final List<Coord> result = new ArrayList<>(cDists.length);
 		for(final CoordDistance cd : cDists){
 			result.add(cd.coord);
-		}
-		if(result.isEmpty()){
-			return null;
 		}
 		return result;
 	}

@@ -6,16 +6,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class BiomeTabCompleter implements TabCompleter{
 
 	private static final List<String> biomes;
+	private static final List<String> keywords = Arrays.asList("near","far");
 
 	static{ //todo use names from locale too
-		biomes = new ArrayList<>();
-		for(final Biome b : Biome.values()){
+		final Biome[] values = Biome.values();
+		biomes = new ArrayList<>(values.length);
+		for(final Biome b : values){
 			biomes.add(b.name());
 		}
 	}
@@ -31,8 +34,17 @@ public class BiomeTabCompleter implements TabCompleter{
 			}
 			return tabBiomes;
 		}
-		if(args.length == 2 & !args[0].equals("") && command.getName().equalsIgnoreCase("bftp")){
-			return Collections.singletonList("near");
+		if(args.length == 2 & !"".equals(args[0]) && command.getName().equalsIgnoreCase("bftp")){
+			if(args[1].isEmpty()){
+				return keywords;
+			}
+			final String k = args[1].toLowerCase();
+			for(final String keyword : keywords){
+				if(keyword.startsWith(k)){
+					return Collections.singletonList(keyword);
+				}
+			}
+			return keywords;
 		}
 		return Collections.emptyList();
 	}
