@@ -34,68 +34,7 @@ public class CommandBfTp implements CommandExecutor{
 
 	{
 		if(BiomeFinder.getPlugin().isUiLibEnabled()){
-			guiStacks = new EnumMap<>(Biome.class);
-			for(final Biome b : new Biome[]{PLAINS,MUTATED_PLAINS}){
-				guiStacks.put(b,new ItemStack(Material.GRASS,1));
-			}
-			for(final Biome b : new Biome[]{FOREST,FOREST_HILLS,MUTATED_FOREST}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1));
-			}
-			for(final Biome b : new Biome[]{BIRCH_FOREST,BIRCH_FOREST_HILLS,MUTATED_BIRCH_FOREST,MUTATED_BIRCH_FOREST_HILLS}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1,((short)2)));
-			}
-			for(final Biome b : new Biome[]{DESERT,DESERT_HILLS,MUTATED_DESERT,BEACHES}){
-				guiStacks.put(b,new ItemStack(Material.SAND,1));
-			}
-			for(final Biome b : new Biome[]{SAVANNA,SAVANNA_ROCK,MUTATED_SAVANNA,MUTATED_SAVANNA_ROCK}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1,((short)4)));
-			}
-			for(final Biome b : new Biome[]{EXTREME_HILLS_WITH_TREES,MUTATED_EXTREME_HILLS_WITH_TREES,TAIGA,TAIGA_HILLS,MUTATED_REDWOOD_TAIGA,MUTATED_TAIGA,REDWOOD_TAIGA,MUTATED_REDWOOD_TAIGA_HILLS,REDWOOD_TAIGA_HILLS}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1,((short)1)));
-			}
-			for(final Biome b : new Biome[]{COLD_BEACH,TAIGA_COLD,TAIGA_COLD_HILLS,MUTATED_TAIGA_COLD}){
-				guiStacks.put(b,new ItemStack(Material.SNOW_BLOCK,1));
-			}
-			for(final Biome b : new Biome[]{ICE_FLATS,ICE_MOUNTAINS,MUTATED_ICE_FLATS,FROZEN_OCEAN,FROZEN_RIVER}){
-				guiStacks.put(b,new ItemStack(Material.ICE,1));
-			}
-			for(final Biome b : new Biome[]{OCEAN,RIVER,DEEP_OCEAN}){
-				guiStacks.put(b,new ItemStack(Material.WATER_BUCKET,1));
-			}
-			for(final Biome b : new Biome[]{MUSHROOM_ISLAND,MUSHROOM_ISLAND_SHORE}){
-				guiStacks.put(b,new ItemStack(Material.RED_MUSHROOM,1));
-			}
-			for(final Biome b : new Biome[]{JUNGLE,JUNGLE_EDGE,JUNGLE_HILLS,MUTATED_JUNGLE,MUTATED_JUNGLE_EDGE}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1,(short)3));
-			}
-			for(final Biome b : new Biome[]{MESA,MESA_CLEAR_ROCK,MESA_ROCK,MUTATED_MESA,MUTATED_MESA_CLEAR_ROCK,MUTATED_MESA_ROCK}){
-				guiStacks.put(b,new ItemStack(Material.STAINED_CLAY,1,(short)1));
-			}
-			for(final Biome b : new Biome[]{EXTREME_HILLS,MUTATED_EXTREME_HILLS,SMALLER_EXTREME_HILLS,STONE_BEACH}){
-				guiStacks.put(b,new ItemStack(Material.STONE,1));
-			}
-			for(final Biome b : new Biome[]{ROOFED_FOREST,MUTATED_ROOFED_FOREST}){
-				guiStacks.put(b,new ItemStack(Material.SAPLING,1,(short)5));
-			}
-			guiStacks.put(HELL,new ItemStack(Material.NETHERRACK));
-			guiStacks.put(SKY,new ItemStack(Material.COAL_BLOCK));
-			guiStacks.put(VOID,new ItemStack(Material.COAL_BLOCK));
-			for(final Biome b : new Biome[]{SWAMPLAND,MUTATED_SWAMPLAND}){
-				guiStacks.put(b,new ItemStack(Material.SLIME_BLOCK,1));
-			}
-			final List<Biome> missing = new ArrayList<>();
-			for(final Biome b : values()){
-				if(!guiStacks.containsKey(b)){
-					missing.add(b);
-				}
-			}
-			if(!missing.isEmpty()){
-				final StringBuilder sb = new StringBuilder("The following biomes don't have a corresponding material for the selection GUI: ");
-				for(final Biome biome : missing){
-					sb.append(biome.name()).append(' ');
-				}
-				BiomeFinder.getPlugin().getConsole().warn(sb.toString());
-			}
+			guiStacks = getGuiStacks();
 		}else{
 			guiStacks = null;
 		}
@@ -169,5 +108,69 @@ public class CommandBfTp implements CommandExecutor{
 		}
 		View v = InventoryView.createPaginated("Biome Selector",components,4);
 		UIPlugin.getViewManager().setView(p,v);
+	}
+
+	private static EnumMap<Biome,ItemStack> getGuiStacks(){
+		final EnumMap<Biome,ItemStack> m = new EnumMap<>(Biome.class);
+		putMulti(m,new ItemStack(Material.GRASS,1),
+				PLAINS,MUTATED_PLAINS);
+		putMulti(m,new ItemStack(Material.SAPLING,1),
+				FOREST,FOREST_HILLS,MUTATED_FOREST);
+		putMulti(m,new ItemStack(Material.SAPLING,1,((short)2)),
+				BIRCH_FOREST,BIRCH_FOREST_HILLS,MUTATED_BIRCH_FOREST,MUTATED_BIRCH_FOREST_HILLS);
+		putMulti(m,new ItemStack(Material.SAND,1),
+				DESERT,DESERT_HILLS,MUTATED_DESERT,BEACHES);
+		putMulti(m,new ItemStack(Material.SAPLING,1,((short)4)),
+				SAVANNA,SAVANNA_ROCK,MUTATED_SAVANNA,MUTATED_SAVANNA_ROCK);
+		putMulti(m,new ItemStack(Material.SAPLING,1,((short)1)),
+				EXTREME_HILLS_WITH_TREES,MUTATED_EXTREME_HILLS_WITH_TREES,TAIGA,TAIGA_HILLS,MUTATED_REDWOOD_TAIGA,MUTATED_TAIGA,REDWOOD_TAIGA,MUTATED_REDWOOD_TAIGA_HILLS,REDWOOD_TAIGA_HILLS);
+		putMulti(m,new ItemStack(Material.SNOW_BLOCK,1),
+				COLD_BEACH,TAIGA_COLD,TAIGA_COLD_HILLS,MUTATED_TAIGA_COLD);
+		putMulti(m,new ItemStack(Material.ICE,1),
+				ICE_FLATS,ICE_MOUNTAINS,MUTATED_ICE_FLATS,FROZEN_OCEAN,FROZEN_RIVER);
+		putMulti(m,new ItemStack(Material.WATER_BUCKET,1),
+				OCEAN,RIVER,DEEP_OCEAN);
+		putMulti(m,new ItemStack(Material.RED_MUSHROOM,1),
+				MUSHROOM_ISLAND,MUSHROOM_ISLAND_SHORE);
+		putMulti(m,new ItemStack(Material.SAPLING,1,(short)3),
+				JUNGLE,JUNGLE_EDGE,JUNGLE_HILLS,MUTATED_JUNGLE,MUTATED_JUNGLE_EDGE);
+		putMulti(m,new ItemStack(Material.STAINED_CLAY,1,(short)1),
+				MESA,MESA_CLEAR_ROCK,MESA_ROCK,MUTATED_MESA,MUTATED_MESA_CLEAR_ROCK,MUTATED_MESA_ROCK);
+		putMulti(m,new ItemStack(Material.STONE,1),
+				EXTREME_HILLS,MUTATED_EXTREME_HILLS,SMALLER_EXTREME_HILLS,STONE_BEACH);
+		putMulti(m,new ItemStack(Material.SAPLING,1,(short)5),
+				ROOFED_FOREST,MUTATED_ROOFED_FOREST);
+		putMulti(m,new ItemStack(Material.NETHERRACK),
+				HELL);
+		putMulti(m,new ItemStack(Material.COAL_BLOCK),
+				SKY);
+		putMulti(m,new ItemStack(Material.COAL_BLOCK),
+				VOID);
+		putMulti(m,new ItemStack(Material.SLIME_BLOCK,1),
+				SWAMPLAND,MUTATED_SWAMPLAND);
+		printMissing(m);
+		return m;
+	}
+
+	private static void printMissing(EnumMap<Biome,ItemStack> m){
+		final List<Biome> missing = new ArrayList<>();
+		for(final Biome b : Biome.values()){
+			if(!m.containsKey(b)){
+				missing.add(b);
+			}
+		}
+		if(!missing.isEmpty()){
+			final StringBuilder sb = new StringBuilder("The following biomes don't have a corresponding material for the selection GUI: ");
+			for(final Biome biome : missing){
+				sb.append(biome.name()).append(' ');
+			}
+			BiomeFinder.getPlugin().getConsole().warn(sb.toString());
+		}
+	}
+
+	private static <V,K> void putMulti(Map<K,V> map,V v,K... ks){
+		for(final K k : ks){
+			map.put(k,v);
+		}
 	}
 }
