@@ -20,10 +20,18 @@ public class BfConfig{
 	private final BiomeFinder plugin;
 	private final Logger log;
 	private FileConfiguration config;
-	private int points = 64;
-	private int distance = 128;
-	private int biomePointsMax = 50;
-	private int nearbyRadius = 512;
+
+	//Defaults
+	private static final int pointsDefault = 64;
+	private static int distanceDefault = 128;
+	private static int biomePointsMaxDefault = 50;
+	private static int nearbyRadiusDefault = 512;
+	//End defaults
+
+	private int points = pointsDefault;
+	private int distance = distanceDefault;
+	private int biomePointsMax = biomePointsMaxDefault;
+	private int nearbyRadius = nearbyRadiusDefault;
 	private boolean checkUpdate = false;
 	private boolean logColorEnabled;
 	private BfLocale bfLocale;
@@ -34,9 +42,7 @@ public class BfConfig{
 			throw new IllegalArgumentException();
 		}
 		this.plugin = plugin;
-		plugin.saveDefaultConfig();
-		config = plugin.getConfig();
-		log = plugin.getLogger();
+		this.log = plugin.getLogger();
 	}
 
 	public Map<World,Map<Biome,Set<Coord>>> loadBiomeCaches(){
@@ -79,6 +85,9 @@ public class BfConfig{
 
 	public void saveBiomeCaches(){
 		final CacheManager cacheManager = plugin.getCacheManager();
+		if(cacheManager == null){
+			throw new IllegalStateException("Cache manager is null, this should never happen!");
+		}
 		if(cacheManager.hasCacheChanged()){
 			log.info("Cache hasn't changed, not resaving");
 			return;
@@ -95,11 +104,11 @@ public class BfConfig{
 		final CacheManager cacheManager = plugin.getCacheManager();
 //		plugin.saveResource("blank.yml",true);
 //		File blank = new File(plugin.getDataFolder(),"blank.yml");
-//		FileConfiguration cacheFileNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
-		final FileConfiguration cacheFileNew = new YamlConfiguration();
+//		FileConfiguration confNew = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"blank.yml"));
+		final FileConfiguration confNew = new YamlConfiguration();
 //		blank.delete();
-		cacheFileNew.set("points",points);
-		cacheFileNew.set("distance",distance);
+		confNew.set("points",points);
+		confNew.set("distance",distance);
 //Biomes
 		for(final Map.Entry<Biome,Set<Coord>> bLoc : cacheManager.getCache(w).entrySet()){
 			final String b = bLoc.getKey().toString();
@@ -109,10 +118,11 @@ public class BfConfig{
 			for(final Coord l : value){
 				locs.add(l.x + "," + l.z);
 			}
-			cacheFileNew.set(b,locs);
+			confNew.set(b,locs);
 		}
+		final File file = new File(plugin.getDataFolder(),w.getName() + ".yml");
 		try{
-			cacheFileNew.save(new File(plugin.getDataFolder(),w.getName() + ".yml"));
+			confNew.save(file);
 		}catch(IOException e1){
 			e1.printStackTrace();
 		}
@@ -130,31 +140,31 @@ public class BfConfig{
 			versionChanged = true;
 		}
 
-		points = config.getInt("points",64);
-		distance = config.getInt("distance",128);
-		biomePointsMax = config.getInt("maxpoints",50);
-		nearbyRadius = config.getInt("bsearchradius",512);
+		points = config.getInt("points",pointsDefault);
+		distance = config.getInt("distance",distanceDefault);
+		biomePointsMax = config.getInt("maxpoints",biomePointsMaxDefault);
+		nearbyRadius = config.getInt("bsearchradius",nearbyRadiusDefault);
 		logColorEnabled = config.getBoolean("colorlogs");
 
 		if(points <= 0){
-			points = 64;
+			points = pointsDefault;
 		}
 		if(distance <= 0){
-			distance = 128;
+			distance = distanceDefault;
 		}
 
 		if(distance % 16 != 0){
-			log.warning("Distance is not a multiple of 16, defaulting to 128.");
-			distance = 128;
+			log.warning("Distance is not a multiple of 16, defaulting to " + distanceDefault + '.');
+			distance = distanceDefault;
 		}
 		if(biomePointsMax < 10){
-			log.warning("Maximum points cannot be less than 10, defaulting to 50.");
-			biomePointsMax = 50;
+			log.warning("Maximum points cannot be less than 10, defaulting to " + biomePointsMaxDefault + '.');
+			biomePointsMax = biomePointsMaxDefault;
 		}
 
 		if(nearbyRadius < 128){
-			log.warning("Nearby search radius must be at least 128, defaulting to 128.");
-			nearbyRadius = 128;
+			log.warning("Nearby search radius must be at least 128, defaulting to " + nearbyRadiusDefault + '.');
+			nearbyRadius = nearbyRadiusDefault;
 		}
 	}
 
@@ -208,7 +218,7 @@ public class BfConfig{
 	public int getRecordedDistance(World w){
 		Configuration c = getWorldConfig(w);
 		if(c == null) return -1;
-		return c.getInt("points",-1);
+		return c.getInt("distance",-1);
 	}
 
 	private Configuration getWorldConfig(World w){
