@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 /*
 1.2.8
 Add "far" keyword to /bftp
+Disable BiomeFinder if something fails on startup
 1.2.7
 Massive speed increase to point cleanup for large cache builds.
 Fix players not being able to place signs that aren't BiomeTP signs.
@@ -45,6 +46,7 @@ public class BiomeFinder extends JavaPlugin{
 	private BfConfig bfc;
 	private ConsoleMessager console;
 	private boolean uiLibEnabled;
+	private boolean enabledCleanly = false;
 
 	public static BiomeFinder getPlugin(){
 		return plugin;
@@ -52,30 +54,38 @@ public class BiomeFinder extends JavaPlugin{
 
 	@Override
 	public void onEnable(){
-		log = getLogger();
-		plugin = this;
-		uiLibEnabled = Bukkit.getPluginManager().isPluginEnabled("UILib");
-		final Material magma = Material.getMaterial("MAGMA");
-		if(magma != null) danger.add(magma);
-		bfc = new BfConfig(this);
-		bfc.loadConfig();
-		if(bfc.isLogColorEnabled()){
-			console = new ColoredConsoleMessager(log);
-		}else{
-			console = new PlainConsoleMessager(log);
+		try{
+			log = getLogger();
+			plugin = this;
+			uiLibEnabled = Bukkit.getPluginManager().isPluginEnabled("UILib");
+			final Material magma = Material.getMaterial("MAGMA");
+			if(magma != null) danger.add(magma);
+			bfc = new BfConfig(this);
+			bfc.loadConfig();
+			if(bfc.isLogColorEnabled()){
+				console = new ColoredConsoleMessager(log);
+			}else{
+				console = new PlainConsoleMessager(log);
+			}
+			if(bfc.isVersionChanged()){
+				console.warn("The config format has been changed. New options may have been added or new defaults set. Please regenerate your config to take advantage of any changes.");
+			}
+			locale = bfc.getLocale();
+			if(bfc.getCheckUpdate()){
+				checkUpdate();
+			}
+			cacheManager = new CacheManager(bfc.loadBiomeCaches());
+			setupCommands();
+			setupEconomy();
+			getServer().getPluginManager().registerEvents(new BiomeSignHandler(this,economy),this);
+			getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
+			enabledCleanly = true;
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-		if(bfc.isVersionChanged()){
-			console.warn("The config format has been changed. New options may have been added or new defaults set. Please regenerate your config to take advantage of any changes.");
+		if(!enabledCleanly){
+			getServer().getPluginManager().disablePlugin(this);
 		}
-		locale = bfc.getLocale();
-		if(bfc.getCheckUpdate()){
-			checkUpdate();
-		}
-		cacheManager = new CacheManager(bfc.loadBiomeCaches());
-		setupCommands();
-		setupEconomy();
-		getServer().getPluginManager().registerEvents(new BiomeSignHandler(this,economy),this);
-		getServer().getPluginManager().registerEvents(new CacheBuildListener(),this);
 	}
 
 	private void checkUpdate(){
@@ -106,8 +116,10 @@ public class BiomeFinder extends JavaPlugin{
 
 	@Override
 	public void onDisable(){
-		getServer().getScheduler().cancelTasks(this);
-		bfc.saveBiomeCaches();
+		if(enabledCleanly){
+			getServer().getScheduler().cancelTasks(this);
+			bfc.saveBiomeCaches();
+		}
 	}
 
 	private boolean setupEconomy(){
