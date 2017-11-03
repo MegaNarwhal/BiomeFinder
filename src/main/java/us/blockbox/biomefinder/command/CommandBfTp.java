@@ -27,18 +27,16 @@ import static org.bukkit.block.Biome.*;
 import static us.blockbox.biomefinder.BiomeFinder.*;
 
 public class CommandBfTp implements CommandExecutor{
+	private final BfConfig bfc;
+	private final BfLocale locale;
+	private final CacheManager cacheManager;
+	private final EnumMap<Biome,ItemStack> biomeIcons;
 
-	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
-	private final BfLocale locale = bfc.getLocale();
-	private final CacheManager cacheManager = BiomeFinder.getPlugin().getCacheManager();
-	private final EnumMap<Biome,ItemStack> guiStacks;
-
-	{
-		if(BiomeFinder.getPlugin().isUiLibEnabled()){
-			guiStacks = getGuiStacks();
-		}else{
-			guiStacks = null;
-		}
+	public CommandBfTp(BfConfig config,CacheManager cacheManager){
+		this.bfc = config;
+		this.locale = bfc.getLocale();
+		this.cacheManager = cacheManager;
+		this.biomeIcons = buildBiomeIconMap();
 	}
 
 	@Override
@@ -136,7 +134,7 @@ public class CommandBfTp implements CommandExecutor{
 		int i = 0;
 		for(final Biome biome : biomes){
 			String biomeName = biome.name();
-			ItemStack biomeStack = guiStacks.get(biome);
+			ItemStack biomeStack = biomeIcons.get(biome);
 			ItemStack itemStack = biomeStack == null ? new ItemStack(Material.SAPLING) : biomeStack.clone();
 			final String name = locale.getFriendlyName(biome);
 			ItemMeta itemMeta = itemStack.getItemMeta();
@@ -148,7 +146,7 @@ public class CommandBfTp implements CommandExecutor{
 		UIPlugin.getViewManager().setView(p,v);
 	}
 
-	private static EnumMap<Biome,ItemStack> getGuiStacks(){
+	private static EnumMap<Biome,ItemStack> buildBiomeIconMap(){
 		final EnumMap<Biome,ItemStack> m = new EnumMap<>(Biome.class);
 		putMulti(m,new ItemStack(Material.GRASS,1),
 				PLAINS,MUTATED_PLAINS);

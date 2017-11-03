@@ -110,7 +110,7 @@ public class BiomeFinder extends JavaPlugin{
 		getCommand("bsearch").setExecutor(new CommandBsearch(this));
 		getCommand("bcachebuild").setExecutor(new CommandBCacheBuild(this));
 		getCommand("bcachebuild").setTabCompleter(new CacheBuildCompleter());
-		getCommand("bftp").setExecutor(new CommandBfTp());
+		getCommand("bftp").setExecutor(new CommandBfTp(bfc,cacheManager));
 		getCommand("bftp").setTabCompleter(new BiomeTabCompleter());
 		getCommand("biomereload").setExecutor(new CommandBiomeReload());
 	}
