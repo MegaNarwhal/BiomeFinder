@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class CacheBuilder{
 	private static final Random RANDOM = new Random();
-	private static boolean buildRunning;
+	private static boolean buildRunning = false;
 	private final Plugin plugin;
 	private final BfConfig bfc;
 	private final CacheManager cacheManager;
@@ -28,6 +28,7 @@ public class CacheBuilder{
 	private long startTime = -1;
 	private final Logger log;
 	private BiomeCoord[] temp;
+	private boolean started = false;
 
 	public CacheBuilder(Plugin plugin,BfConfig bfc,CacheManager cacheManager,World world,int centerX,int centerZ){
 		this.plugin = plugin;
@@ -47,7 +48,11 @@ public class CacheBuilder{
 		if(CacheBuilder.buildRunning){
 			throw new IllegalStateException("A cache build is already running!");
 		}
+		if(started){
+			throw new IllegalStateException("This cache builder has already been started.");
+		}
 		CacheBuilder.buildRunning = true;
+		started = true;
 		plugin.getServer().getPluginManager().callEvent(new CacheBuildStartEvent(world,centerX,centerZ));
 		System.out.println("Using new cache builder");
 		startTime = System.currentTimeMillis();
