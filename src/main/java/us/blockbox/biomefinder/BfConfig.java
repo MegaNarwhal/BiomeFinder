@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class BfConfig{
 	private final BiomeFinder plugin;
@@ -20,9 +21,9 @@ public class BfConfig{
 
 	//Defaults
 	private static final int pointsDefault = 64;
-	private static int distanceDefault = 128;
-	private static int biomePointsMaxDefault = 50;
-	private static int nearbyRadiusDefault = 512;
+	private static final int distanceDefault = 128;
+	private static final int biomePointsMaxDefault = 50;
+	private static final int nearbyRadiusDefault = 512;
 	//End defaults
 
 	private int points = pointsDefault;
@@ -61,6 +62,7 @@ public class BfConfig{
 	}
 
 	private Map<Biome,Set<Coord>> loadBiomeCache(World w,FileConfiguration conf){
+		Pattern comma = Pattern.compile(",");
 		log.info("Loading biome cache for world " + w.getName());
 //Biomes in world
 		final Map<Biome,Set<Coord>> wCache = new EnumMap<>(Biome.class);
@@ -72,7 +74,7 @@ public class BfConfig{
 			final Set<Coord> locs = new HashSet<>(stringList.size());
 //Locations in biome
 			for(final String location : stringList){
-				final String[] i = location.split(",");
+				final String[] i = comma.split(location);
 				locs.add(new Coord(Integer.valueOf(i[0]),Integer.valueOf(i[1])));
 			}
 			wCache.put(Biome.valueOf(biome),locs);
