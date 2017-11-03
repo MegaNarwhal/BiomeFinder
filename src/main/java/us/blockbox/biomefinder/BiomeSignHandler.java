@@ -20,7 +20,6 @@ import us.blockbox.biomefinder.locale.BfMessage;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
-
 class BiomeSignHandler implements Listener{
 
 	private final JavaPlugin plugin;
@@ -81,6 +80,7 @@ class BiomeSignHandler implements Listener{
 						public void run(){
 							if(price > 0){
 								economy.withdrawPlayer(p,price);
+								//todo use econ.format
 								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),format.format(price),currencyName));
 							}
 						}

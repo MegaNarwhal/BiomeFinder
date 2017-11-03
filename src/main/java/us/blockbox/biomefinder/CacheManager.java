@@ -3,6 +3,7 @@ package us.blockbox.biomefinder;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +14,7 @@ public class CacheManager{
 
 	CacheManager(Map<World,Map<Biome,Set<Coord>>> biomeCache){
 		this.biomeCache = new HashMap<>(biomeCache);
-		this.biomeCacheOriginal = new HashMap<>(biomeCache);
+		this.biomeCacheOriginal = Collections.unmodifiableMap(new HashMap<>(biomeCache));
 	}
 
 	public void setCache(Map<World,Map<Biome,Set<Coord>>> biomeCache){
@@ -36,7 +37,22 @@ public class CacheManager{
 		return biomeCache.containsKey(world);
 	}
 
-	boolean hasCacheChanged(){
+	/**
+	 * @param w The World whose cache to check for changes
+	 * @return True if the cache has not changed since it was loaded
+	 * @deprecated This method hasn't been tested yet.
+	 */
+	@Deprecated
+	public boolean isCacheUnchanged(World w){//todo test
+		final Map<Biome,Set<Coord>> wCurrent = biomeCache.get(w);
+		final Map<Biome,Set<Coord>> wOld = biomeCacheOriginal.get(w);
+		return wCurrent.equals(wOld);
+	}
+
+	/**
+	 * @return True if the cache has not changed since it was loaded
+	 */
+	public boolean isCacheUnchanged(){
 		return biomeCache.equals(biomeCacheOriginal);
 	}
 }
