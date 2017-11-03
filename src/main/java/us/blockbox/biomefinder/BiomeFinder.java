@@ -3,6 +3,7 @@ package us.blockbox.biomefinder;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+//todo copy defaults for locale
 /*
 1.2.8
 Add "far" keyword to /bftp
@@ -140,26 +141,26 @@ public class BiomeFinder extends JavaPlugin{
 		ANY
 	}
 
-	public static boolean tpToBiome(final Player p,final Biome b,final LocationPreference preference){
-		final World w = p.getWorld();
+	public static boolean tpToBiome(CommandSender sender,Player target,Biome b,LocationPreference pref){
+		final World w = target.getWorld();
 		final Set<Coord> locSet = cacheManager.getCache(w).get(b);
 
 		if(locSet == null || locSet.isEmpty()){
-			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
+			sender.sendMessage(prefix + String.format(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
 			return false;
 		}
 
 		final List<Coord> locList;
-		if(preference == LocationPreference.ANY){
+		if(pref == LocationPreference.ANY){
 			locList = new ArrayList<>(locSet);
 		}else{
-			locList = getSortedCoords(new Coord(p.getLocation()),locSet,preference);
+			locList = getSortedCoords(new Coord(target.getLocation()),locSet,pref);
 		}
 
-		final Location l = pickSafe(w,locList,preference != LocationPreference.ANY); //todo don't spawn players into side of block
+		final Location l = pickSafe(w,locList,pref != LocationPreference.ANY); //todo don't spawn players into side of block
 
 		if(l == null){
-			p.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
+			sender.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
 			return false;
 		}
 
@@ -170,11 +171,19 @@ public class BiomeFinder extends JavaPlugin{
 				p.setInvulnerable(false);
 			}
 		}.runTaskLater(plugin,40L);*/
-		final boolean teleSuccess = p.teleport(l);
+		final boolean teleSuccess = target.teleport(l);
 		if(teleSuccess){
-			p.sendMessage(prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ()));
+			String msg = prefix + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ());
+			target.sendMessage(msg);
+			if(sender != target){
+				sender.sendMessage(msg);
+			}
 		}
 		return teleSuccess;
+	}
+
+	public static boolean tpToBiome(final Player p,final Biome b,final LocationPreference preference){
+		return tpToBiome(p,p,b,preference);
 	}
 
 	public static boolean tpToBiome(final Player p,final Biome b){
@@ -245,7 +254,7 @@ public class BiomeFinder extends JavaPlugin{
 
 	public static Biome parseBiome(String biome){
 		final Biome b;
-		biome = biome.toUpperCase();
+		biome = biome.toUpperCase(Locale.US);
 		try{
 			b = Biome.valueOf(biome);
 		}catch(final IllegalArgumentException e){

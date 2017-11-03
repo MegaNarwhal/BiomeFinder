@@ -1,37 +1,83 @@
 package us.blockbox.biomefinder.locale;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class BfLocale{
+	private static final Pattern UNDERSCORES = Pattern.compile("_");
+	private final String localeName;
+	private final Map<BfMessage,String> messages;
+//	private final EnumMap<Biome,String> friendlyNames = new EnumMap<>(Biome.class);//todo
 
-	private final String locale;
-	private static final Pattern underscores = Pattern.compile("_");
-	private final Map<BfMessage,String> messages = new EnumMap<>(BfMessage.class);
-	private final EnumMap<Biome,String> friendlyNames = new EnumMap<>(Biome.class);
-
-	public BfLocale(String locale){
-		this.locale = locale;
+	public String getLocaleName(){
+		return localeName;
 	}
 
-	public void loadLocale(FileConfiguration config){
-		messages.clear();
+	private BfLocale(String localeName,Map<BfMessage,String> messages){
+		this.localeName = localeName;
+		this.messages = messages;
+	}
+
+	public static BfLocale create(Plugin plugin,String localeName,File file) throws IOException, IllegalArgumentException{
+		if(!file.exists() || !file.isFile()){
+			plugin.saveResource(file.getName(),false);
+		}
+		final FileConfiguration config = getConfigWithDefaults(plugin,file);
+		String name = localeName == null ? file.getName().replace(".yml","") : localeName;
+		Map<BfMessage,String> messageMap = buildMap(config);
+		checkNewOptions(plugin.getLogger(),config);
+		return new BfLocale(name,messageMap);
+	}
+
+	private static FileConfiguration getConfigWithDefaults(Plugin plugin,File file){
+		final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+		final InputStream defConfigStream = plugin.getResource("locale.yml");
+		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream,Charsets.UTF_8)));
+		return config;
+	}
+
+	private static Map<BfMessage,String> buildMap(FileConfiguration config){
+		Map<BfMessage,String> messages = new EnumMap<>(BfMessage.class);
 		for(BfMessage m : BfMessage.values()){
-			messages.put(m,ChatColor.translateAlternateColorCodes('&',config.getString(m.toString())));
+			final String text = config.getString(m.name());
+			messages.put(m,ChatColor.translateAlternateColorCodes('&',text));
+		}
+		return Maps.immutableEnumMap(messages);
+	}
+
+	private static void checkNewOptions(Logger log,FileConfiguration config){
+		Set<String> userSet = config.getKeys(true);
+		Set<String> defaults = config.getDefaults().getKeys(true);
+		Sets.SetView<String> newOptions = Sets.difference(defaults,userSet);
+		if(!newOptions.isEmpty()){
+			log.warning("New messages have been added to the locale:");
+			log.warning(newOptions.toString());
+			log.warning("Please delete or move your currently locale file to be able to customize these new options.");
 		}
 	}
 
 	public String getFriendlyName(Biome biome){
-		return WordUtils.capitalizeFully(underscores.matcher(biome.name()).replaceAll(" "));
+		return WordUtils.capitalizeFully(UNDERSCORES.matcher(biome.name()).replaceAll(" "));
 	}
 
-	public static String format(String message,boolean stripColor){
+	public static String format(String message,boolean stripColor){//todo move
 		if(stripColor){
 			return ChatColor.stripColor(message);
 		}

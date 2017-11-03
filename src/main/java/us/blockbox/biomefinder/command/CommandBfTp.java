@@ -1,5 +1,6 @@
 package us.blockbox.biomefinder.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -42,23 +43,29 @@ public class CommandBfTp implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
-		if(!(sender instanceof Player)){
-			sender.sendMessage(BfLocale.format(prefix + locale.getMessage(BfMessage.COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled()));
-			return true;
-		}
 		if(!sender.hasPermission("biomefinder.tp")){
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
 			return true;
 		}
-		final Player p = (Player)sender;
-		final World world = p.getWorld();
+		final Player target = getTarget(sender,args);
+		if(target == null){
+			//any error message was sent in getTarget, just return
+			return true;
+		}
+		if(sender != target && !sender.hasPermission("biomefinder.tp.other")){
+			sender.sendMessage(locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
+			return true;
+		}
+		final World world = target.getWorld();
 		if(!cacheManager.hasCache(world)){
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.WORLD_INDEX_MISSING));
 			return true;
 		}
 		if(args.length < 1){
-			if(BiomeFinder.getPlugin().isUiLibEnabled()){ //todo uilib pagination
-				showSelectionUI(p,world);
+			//don't need to consider if the sender isn't the target here
+			//you need at least 2 args to have a sender other than yourself
+			if(BiomeFinder.getPlugin().isUiLibEnabled()){
+				showSelectionUI(target,world);
 			}else{
 				sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 			}
@@ -69,9 +76,40 @@ public class CommandBfTp implements CommandExecutor{
 			sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 		}else{
 			final LocationPreference pref = getLocationPreference(args);
-			tpToBiome(p,b,pref);
+			tpToBiome(sender,target,b,pref);
 		}
 		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	private Player getTarget(CommandSender sender,String[] args){
+		Player target = null;
+		int argsLength = args.length;
+		if(argsLength >= 2){
+			//we have biome name and player name at least
+			String name = args[argsLength - 1];//last argument should be player name
+			Player byName = Bukkit.getPlayer(name);
+			if(byName == null){
+				if(argsLength > 2){
+					//we know there was a keyword so the last arg is definitely the player name
+					//player wasn't found by name so return
+					sender.sendMessage(BfLocale.format(prefix + String.format(locale.getMessage(BfMessage.PLAYER_NOT_FOUND),name),!bfc.isLogColorEnabled()));
+					return null;
+				}
+				//keep going with the assumption that the last arg is a keyword, not a player name
+			}else{
+				target = byName;
+			}
+		}
+		if(target == null){
+			if(sender instanceof Player){
+				target = ((Player)sender);
+			}else{
+				sender.sendMessage(BfLocale.format(prefix + locale.getMessage(BfMessage.COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled()));
+				return null;
+			}
+		}
+		return target;
 	}
 
 	private static LocationPreference getLocationPreference(String[] args){

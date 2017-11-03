@@ -1,6 +1,5 @@
 package us.blockbox.biomefinder;
 
-import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -11,8 +10,6 @@ import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -88,7 +85,7 @@ public class BfConfig{
 		if(cacheManager == null){
 			throw new IllegalStateException("Cache manager is null, this should never happen!");
 		}
-		if(cacheManager.hasCacheChanged()){
+		if(cacheManager.isCacheUnchanged()){
 			log.info("Cache hasn't changed, not resaving");
 			return;
 		}
@@ -134,7 +131,12 @@ public class BfConfig{
 		config = plugin.getConfig();
 		checkUpdate = config.getBoolean("checkupdate",true);
 
-		loadLocale(new File(plugin.getDataFolder(),"locale.yml"));
+		try{
+			this.bfLocale = BfLocale.create(plugin,null,new File(plugin.getDataFolder(),"locale.yml"));
+			log.info("Loaded locale \"" + this.bfLocale.getLocaleName() + "\".");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 
 		if(configNeedsUpdate(config.getInt("version",0))){
 			versionChanged = true;
@@ -170,19 +172,6 @@ public class BfConfig{
 
 	private boolean configNeedsUpdate(int version){
 		return version < config.getDefaults().getInt("version");
-	}
-
-	private void loadLocale(File file){
-		if(!file.exists() || !file.isFile()){
-			plugin.saveResource(file.getName(),false);
-		}
-		if(bfLocale == null){
-			bfLocale = new BfLocale(file.getName().replace(".yml",""));
-		}
-		final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-		final InputStream defConfigStream = plugin.getResource("locale.yml");
-		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream,Charsets.UTF_8)));
-		bfLocale.loadLocale(config);
 	}
 
 	public BfLocale getLocale(){

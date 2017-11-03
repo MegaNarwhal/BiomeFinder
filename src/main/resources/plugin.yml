@@ -7,7 +7,7 @@ description: Teleport to any biome instantly.
 commands:
   bftp:
     description: Go to a biome.
-    usage: /<command> <biome>
+    usage: "/<command> <biome> [keyword] [player]"
     aliases: bfind
   bcachebuild:
     description: Build a cache of biome locations to greatly speed up biome finding.
