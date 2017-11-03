@@ -17,8 +17,12 @@ public class CacheManager{
 		this.biomeCacheOriginal = Collections.unmodifiableMap(new HashMap<>(biomeCache));
 	}
 
-	public void setCache(Map<World,Map<Biome,Set<Coord>>> biomeCache){
-		this.biomeCache = biomeCache;
+	public void setCache(Map<World,Map<Biome,Set<Coord>>> cache){
+		this.biomeCache = cache;
+	}
+
+	public void setWorldCache(World world,Map<Biome,Set<Coord>> cache){
+		biomeCache.put(world,cache);
 	}
 
 	public Map<World,Map<Biome,Set<Coord>>> getCache(){

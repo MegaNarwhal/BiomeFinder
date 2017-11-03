@@ -3,18 +3,25 @@ package us.blockbox.biomefinder.listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import us.blockbox.biomefinder.BfConfig;
-import us.blockbox.biomefinder.BiomeFinder;
+import us.blockbox.biomefinder.ConsoleMessager;
 import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 
+import java.util.concurrent.TimeUnit;
+
 public class CacheBuildListener implements Listener{
 
-	private static final BiomeFinder plugin = BiomeFinder.getPlugin();
-	private final BfConfig bfc = plugin.getBfConfig();
+	private final ConsoleMessager console;
+	private final BfConfig bfc;
+
+	public CacheBuildListener(ConsoleMessager console,BfConfig bfc){
+		this.console = console;
+		this.bfc = bfc;
+	}
 
 	@EventHandler
 	public void onCacheBuildStart(CacheBuildStartEvent e){
-		plugin.getConsole().info(
+		console.info(
 				"====================================",
 				"",
 				"Building cache for: " + e.getWorld().getName(),
@@ -28,9 +35,10 @@ public class CacheBuildListener implements Listener{
 
 	@EventHandler
 	public void onCacheBuildComplete(CacheBuildCompleteEvent e){
-		plugin.getConsole().success(
+		double seconds = e.getDurationMillis() / (double)TimeUnit.SECONDS.toMillis(1);
+		console.success(
 				"Cache building complete for world " + e.getWorld().getName(),
-				"Elapsed time: " + e.getTimeElapsed() + " seconds."
+				String.format("Elapsed time: %.2f seconds.",seconds)
 		);
 	}
 }

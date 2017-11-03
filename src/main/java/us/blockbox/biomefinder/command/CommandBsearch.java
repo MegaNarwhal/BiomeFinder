@@ -14,7 +14,6 @@ import us.blockbox.biomefinder.locale.BfLocale;
 import java.text.DecimalFormat;
 import java.util.Map;
 
-import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 public class CommandBsearch implements CommandExecutor{
@@ -36,12 +35,12 @@ public class CommandBsearch implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender,Command command,String s,String[] strings){
 		if(!(sender instanceof Player)){
-			final String message = BfLocale.format(prefix + locale.getMessage(COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled());
+			final String message = BfLocale.format(locale.getPrefix() + locale.getMessage(COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled());
 			sender.sendMessage(message);
 			return true;
 		}
 		if(!sender.hasPermission("biomefinder.bsearch")){
-			sender.sendMessage(prefix + locale.getMessage(PLAYER_NO_PERMISSION));
+			sender.sendMessage(locale.getPrefix() + locale.getMessage(PLAYER_NO_PERMISSION));
 			return true;
 		}
 		final Player p = (Player)sender;

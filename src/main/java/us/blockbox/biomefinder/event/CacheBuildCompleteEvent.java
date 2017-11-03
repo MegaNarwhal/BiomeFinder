@@ -9,14 +9,14 @@ public final class CacheBuildCompleteEvent extends Event{
 	private final World world;
 	private final int centerX;
 	private final int centerZ;
-	private final double timeElapsed;
+	private final long durationMillis;
 
-	public CacheBuildCompleteEvent(World world,int centerX,int centerZ,double timeElapsed){
+	public CacheBuildCompleteEvent(World world,int centerX,int centerZ,long durationMillis){
 		super();
 		this.world = world;
 		this.centerX = centerX;
 		this.centerZ = centerZ;
-		this.timeElapsed = timeElapsed;
+		this.durationMillis = durationMillis;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public final class CacheBuildCompleteEvent extends Event{
 		return centerZ;
 	}
 
-	public double getTimeElapsed(){
-		return timeElapsed;
+	public long getDurationMillis(){
+		return durationMillis;
 	}
 }

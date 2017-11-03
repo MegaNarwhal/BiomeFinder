@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 public class BfLocale{
 	private static final Pattern UNDERSCORES = Pattern.compile("_");
+	private final String prefix;
 	private final String localeName;
 	private final Map<BfMessage,String> messages;
 //	private final EnumMap<Biome,String> friendlyNames = new EnumMap<>(Biome.class);//todo
@@ -30,12 +31,17 @@ public class BfLocale{
 		return localeName;
 	}
 
-	private BfLocale(String localeName,Map<BfMessage,String> messages){
+	private BfLocale(String prefix,String localeName,Map<BfMessage,String> messages){
+		this.prefix = prefix;
 		this.localeName = localeName;
 		this.messages = messages;
 	}
 
-	public static BfLocale create(Plugin plugin,String localeName,File file) throws IOException, IllegalArgumentException{
+	public String getPrefix(){
+		return prefix;
+	}
+
+	public static BfLocale create(Plugin plugin,String prefix,String localeName,File file) throws IOException, IllegalArgumentException{
 		if(!file.exists() || !file.isFile()){
 			plugin.saveResource(file.getName(),false);
 		}
@@ -43,7 +49,7 @@ public class BfLocale{
 		String name = localeName == null ? file.getName().replace(".yml","") : localeName;
 		Map<BfMessage,String> messageMap = buildMap(config);
 		checkNewOptions(plugin.getLogger(),config);
-		return new BfLocale(name,messageMap);
+		return new BfLocale(prefix,name,messageMap);
 	}
 
 	private static FileConfiguration getConfigWithDefaults(Plugin plugin,File file){

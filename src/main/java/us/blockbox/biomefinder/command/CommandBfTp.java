@@ -13,6 +13,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheManager;
+import us.blockbox.biomefinder.TeleportManager;
+import us.blockbox.biomefinder.TeleportManager.LocationPreference;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 import us.blockbox.uilib.UIPlugin;
@@ -24,16 +26,20 @@ import us.blockbox.uilib.view.View;
 import java.util.*;
 
 import static org.bukkit.block.Biome.*;
-import static us.blockbox.biomefinder.BiomeFinder.*;
+import static us.blockbox.biomefinder.BiomeFinder.parseBiome;
 
 public class CommandBfTp implements CommandExecutor{
+	private final BiomeFinder biomeFinder;
 	private final BfConfig bfc;
 	private final BfLocale locale;
 	private final CacheManager cacheManager;
 	private final EnumMap<Biome,ItemStack> biomeIcons;
+	private final TeleportManager tpManager;
 
-	public CommandBfTp(BfConfig config,CacheManager cacheManager){
+	public CommandBfTp(BiomeFinder biomeFinder,BfConfig config,CacheManager cacheManager,TeleportManager tpManager){
+		this.biomeFinder = biomeFinder;
 		this.bfc = config;
+		this.tpManager = tpManager;
 		this.locale = bfc.getLocale();
 		this.cacheManager = cacheManager;
 		this.biomeIcons = buildBiomeIconMap();
@@ -42,7 +48,7 @@ public class CommandBfTp implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
 		if(!sender.hasPermission("biomefinder.tp")){
-			sender.sendMessage(prefix + locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
+			sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
 			return true;
 		}
 		final Player target = getTarget(sender,args);
@@ -56,25 +62,25 @@ public class CommandBfTp implements CommandExecutor{
 		}
 		final World world = target.getWorld();
 		if(!cacheManager.hasCache(world)){
-			sender.sendMessage(prefix + locale.getMessage(BfMessage.WORLD_INDEX_MISSING));
+			sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.WORLD_INDEX_MISSING));
 			return true;
 		}
 		if(args.length < 1){
 			//don't need to consider if the sender isn't the target here
 			//you need at least 2 args to have a sender other than yourself
-			if(BiomeFinder.getPlugin().isUiLibEnabled()){
+			if(biomeFinder.isUiLibEnabled()){
 				showSelectionUI(target,world);
 			}else{
-				sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
+				sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 			}
 			return true;
 		}
 		final Biome b = parseBiome(args[0]);
 		if(b == null){
-			sender.sendMessage(prefix + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
+			sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 		}else{
 			final LocationPreference pref = getLocationPreference(args);
-			tpToBiome(sender,target,b,pref);
+			tpManager.tpToBiome(sender,target,b,pref);
 		}
 		return true;
 	}
@@ -91,7 +97,7 @@ public class CommandBfTp implements CommandExecutor{
 				if(argsLength > 2){
 					//we know there was a keyword so the last arg is definitely the player name
 					//player wasn't found by name so return
-					sender.sendMessage(BfLocale.format(prefix + String.format(locale.getMessage(BfMessage.PLAYER_NOT_FOUND),name),!bfc.isLogColorEnabled()));
+					sender.sendMessage(BfLocale.format(locale.getPrefix() + String.format(locale.getMessage(BfMessage.PLAYER_NOT_FOUND),name),!bfc.isLogColorEnabled()));
 					return null;
 				}
 				//keep going with the assumption that the last arg is a keyword, not a player name
@@ -103,7 +109,7 @@ public class CommandBfTp implements CommandExecutor{
 			if(sender instanceof Player){
 				target = ((Player)sender);
 			}else{
-				sender.sendMessage(BfLocale.format(prefix + locale.getMessage(BfMessage.COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled()));
+				sender.sendMessage(BfLocale.format(locale.getPrefix() + locale.getMessage(BfMessage.COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled()));
 				return null;
 			}
 		}

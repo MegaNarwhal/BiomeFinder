@@ -12,16 +12,13 @@ import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
 import us.blockbox.biomefinder.CacheManager;
-import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.util.logging.Logger;
 
-import static us.blockbox.biomefinder.BiomeFinder.prefix;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 public class CommandBCacheBuild implements CommandExecutor{
-
 	private final BiomeFinder plugin;
 	private final Logger log;
 	private final CacheManager cacheManager;
@@ -36,14 +33,13 @@ public class CommandBCacheBuild implements CommandExecutor{
 		locale = bfc.getLocale();
 	}
 
-
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
 		if(!(sender instanceof ConsoleCommandSender)){
-			sender.sendMessage(prefix + locale.getMessage(COMMAND_NOT_CONSOLE));
+			sender.sendMessage(locale.getPrefix() + locale.getMessage(COMMAND_NOT_CONSOLE));
 			return true;
 		}
-		if(CacheBuilder.isCacheBuildRunning()){
+		if(CacheBuilder.isBuildRunning()){
 			log.info(locale.getMessage(CACHE_BUILD_RUNNING));
 			return true;
 		}
@@ -78,8 +74,8 @@ public class CommandBCacheBuild implements CommandExecutor{
 					sX = world.getSpawnLocation().getBlockX();
 					sZ = world.getSpawnLocation().getBlockZ();
 				}
-				centerX = Math.round((float)sX/distance)*distance;
-				centerZ = Math.round((float)sZ/distance)*distance;
+				centerX = Math.round((float)sX / distance) * distance;
+				centerZ = Math.round((float)sZ / distance) * distance;
 			}else{
 				try{
 					centerX = Integer.valueOf(args[1]);
@@ -88,14 +84,11 @@ public class CommandBCacheBuild implements CommandExecutor{
 					log.info("Invalid center coordinates specified.");
 					return true;
 				}
-				centerX = Math.round((float)centerX/distance)*distance;
-				centerZ = Math.round((float)centerZ/distance)*distance;
+				centerX = Math.round((float)centerX / distance) * distance;
+				centerZ = Math.round((float)centerZ / distance) * distance;
 			}
 		}
-
-		CacheBuilder.startTime = System.currentTimeMillis();
-		plugin.getServer().getPluginManager().callEvent(new CacheBuildStartEvent(world,centerX,centerZ));
-		new CacheBuilder(plugin,world,centerX,centerZ).runTask(plugin);
+		new CacheBuilder(plugin,bfc,cacheManager,world,centerX,centerZ).start();
 		return true;
 	}
 }

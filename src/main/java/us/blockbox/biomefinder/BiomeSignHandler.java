@@ -12,41 +12,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
-import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
 class BiomeSignHandler implements Listener{
-
-	private final JavaPlugin plugin;
-	private final String currencyName;
-	private static final DecimalFormat format = new DecimalFormat("0.#");
-	private static final BfLocale locale = BiomeFinder.getPlugin().getBfConfig().getLocale();
+	//	private static final DecimalFormat format = new DecimalFormat("0.#");
 	private static final Pattern nonDecimal = Pattern.compile("[^0-9.]");
+	private static final String SIGN_FIRST_LINE = "[BiomeTP]";
+	private final Plugin plugin;
+	private final BfLocale locale;
 	private final Economy economy;
+	private final TeleportManager tpManager;
 
-	BiomeSignHandler(JavaPlugin plugin,Economy economy){
+	BiomeSignHandler(Plugin plugin,BfLocale locale,Economy economy,TeleportManager tpManager){
 		this.plugin = plugin;
+		this.locale = locale;
 		this.economy = economy;
-		if(economy != null){
-			final String currencyNameTemp = economy.currencyNamePlural();
-			if(currencyNameTemp == null){
-				currencyName = "";
-			}else{
-				currencyName = currencyNameTemp;
-			}
-		}else{
-			currencyName = null;
-		}
+		this.tpManager = tpManager;
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	void onInteract(PlayerInteractEvent e){
-		if(e.isCancelled() || e.getAction() != Action.RIGHT_CLICK_BLOCK){
+		if(e.getAction() != Action.RIGHT_CLICK_BLOCK){
 			return;
 		}
 		final Block block = e.getClickedBlock();
@@ -54,34 +45,30 @@ class BiomeSignHandler implements Listener{
 			return;
 		}
 		final Sign sign = (Sign)block.getState();
-		if(!ChatColor.stripColor(sign.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]")){
+		if(!ChatColor.stripColor(sign.getLine(0).trim()).equalsIgnoreCase(SIGN_FIRST_LINE)){
 			return;
 		}
 		final Player p = e.getPlayer();
-
 		final Biome biome = getSignBiome(sign.getLine(2));
 		if(biome == null){
 			return;
 		}
-
 		if(!p.hasPermission("biomefinder.sign." + biome.toString().toLowerCase())){
 			p.sendMessage(locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
 			return;
 		}
-
 		final double price = getPrice(sign);
 		if(price <= 0 || economy == null){
-			BiomeFinder.tpToBiome(p,biome);
+			tpManager.tpToBiome(p,biome);
 		}else{
 			if(economy.getBalance(p) >= price){
-				if(BiomeFinder.tpToBiome(p,biome)){
+				if(tpManager.tpToBiome(p,biome)){
 					new BukkitRunnable(){
 						@Override
 						public void run(){
 							if(price > 0){
 								economy.withdrawPlayer(p,price);
-								//todo use econ.format
-								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),format.format(price),currencyName));
+								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),economy.format(price)));
 							}
 						}
 					}.runTaskAsynchronously(plugin);
@@ -92,11 +79,8 @@ class BiomeSignHandler implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	void onSignChange(SignChangeEvent e){
-		if(e.isCancelled()){
-			return;
-		}
 		if(ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]") && !isValidBiomeSign(e)){
 			e.getBlock().breakNaturally();
 		}

@@ -132,7 +132,7 @@ public class BfConfig{
 		checkUpdate = config.getBoolean("checkupdate",true);
 
 		try{
-			this.bfLocale = BfLocale.create(plugin,null,new File(plugin.getDataFolder(),"locale.yml"));
+			this.bfLocale = BfLocale.create(plugin,plugin.prefix,null,new File(plugin.getDataFolder(),"locale.yml"));
 			log.info("Loaded locale \"" + this.bfLocale.getLocaleName() + "\".");
 		}catch(Exception e){
 			e.printStackTrace();

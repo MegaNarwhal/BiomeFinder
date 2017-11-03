@@ -11,8 +11,6 @@ import us.blockbox.biomefinder.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
-import static us.blockbox.biomefinder.BiomeFinder.prefix;
-
 public class CommandBiomeReload implements CommandExecutor{
 
 	private final BfConfig bfc = BiomeFinder.getPlugin().getBfConfig();
@@ -29,7 +27,7 @@ public class CommandBiomeReload implements CommandExecutor{
 			return true;
 		}
 
-		if(CacheBuilder.isCacheBuildRunning()){
+		if(CacheBuilder.isBuildRunning()){
 			sender.sendMessage("A cache is currently being built. Try again when it's finished.");
 			return true;
 		}
@@ -38,7 +36,7 @@ public class CommandBiomeReload implements CommandExecutor{
 		cacheManager.setCache(bfc.loadBiomeCaches());
 		bfc.loadConfig();
 		final boolean stripColor = !bfc.isLogColorEnabled() && sender instanceof ConsoleCommandSender;
-		String message = BfLocale.format(prefix + locale.getMessage(BfMessage.CONFIG_RELOADED),stripColor);
+		String message = BfLocale.format(locale.getPrefix() + locale.getMessage(BfMessage.CONFIG_RELOADED),stripColor);
 		sender.sendMessage(message);
 		return true;
 	}
