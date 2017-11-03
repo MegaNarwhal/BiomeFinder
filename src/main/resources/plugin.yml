@@ -24,6 +24,9 @@ permissions:
     default: op
     children:
       biomefinder.find: true
+  biomefinder.tp.other:
+    description: Teleport another player to a biome using commands. If you grant this you should grant biomefinder.tp as well.
+    default: op
   biomefinder.find:
     description: This node may be removed at some point. Use biomefinder.tp instead. Teleport to a biome using commands.
     default: false
