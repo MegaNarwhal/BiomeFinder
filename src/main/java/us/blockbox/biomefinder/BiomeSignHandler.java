@@ -86,7 +86,7 @@ class BiomeSignHandler implements Listener{
 		}
 	}
 
-	private boolean isValidBiomeSign(SignChangeEvent e){
+	private static boolean isValidBiomeSign(SignChangeEvent e){
 		final int LINE_PRICE = 3;
 
 		final Player p = e.getPlayer();
@@ -99,7 +99,7 @@ class BiomeSignHandler implements Listener{
 			return false;
 		}
 		final String priceLine = e.getLine(LINE_PRICE);
-		if(!priceLine.trim().equals("")){
+		if(!priceLine.trim().isEmpty()){
 			if(!p.hasPermission("biomefinder.create.cost")){
 				p.sendMessage(ChatColor.GRAY + "You don't have permission.");
 				return false;
@@ -112,7 +112,7 @@ class BiomeSignHandler implements Listener{
 		return true;
 	}
 
-	private Double parsePrice(String line){
+	private static Double parsePrice(String line){
 		try{
 			return Double.parseDouble(nonDecimal.matcher(line.trim()).replaceAll(""));
 		}catch(NumberFormatException e){
@@ -121,7 +121,7 @@ class BiomeSignHandler implements Listener{
 	}
 
 	private double getPrice(Sign sign){
-		if(sign.getLine(3).trim().equals("")){
+		if(sign.getLine(3).trim().isEmpty()){
 			return 0;
 		}
 		final Double price = parsePrice(sign.getLine(3));
@@ -153,8 +153,8 @@ class BiomeSignHandler implements Listener{
 		return false;
 	}*/
 
-	Biome getSignBiome(String signBiome){
-		if(signBiome == null || signBiome.trim().equals("")){
+	static Biome getSignBiome(String signBiome){
+		if(signBiome == null || signBiome.trim().isEmpty()){
 			return null;
 		}
 		signBiome = signBiome.toUpperCase();

@@ -17,6 +17,7 @@ import us.blockbox.biomefinder.TeleportManager;
 import us.blockbox.biomefinder.TeleportManager.LocationPreference;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
+import us.blockbox.biomefinder.util.EnumUtils;
 import us.blockbox.uilib.UIPlugin;
 import us.blockbox.uilib.component.CommandItem;
 import us.blockbox.uilib.component.Component;
@@ -25,7 +26,6 @@ import us.blockbox.uilib.view.View;
 
 import java.util.*;
 
-import static org.bukkit.block.Biome.*;
 import static us.blockbox.biomefinder.BiomeFinder.parseBiome;
 
 public class CommandBfTp implements CommandExecutor{
@@ -42,7 +42,7 @@ public class CommandBfTp implements CommandExecutor{
 		this.tpManager = tpManager;
 		this.locale = bfc.getLocale();
 		this.cacheManager = cacheManager;
-		this.biomeIcons = buildBiomeIconMap();
+		this.biomeIcons = buildBiomeIconMapNew();
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class CommandBfTp implements CommandExecutor{
 
 	private static LocationPreference getLocationPreference(String[] args){
 		if(args.length >= 2){
-			final String distanceArg = args[1].toLowerCase();
+			final String distanceArg = args[1].toLowerCase(Locale.US);
 			if(distanceArg.startsWith("near")){
 				return LocationPreference.NEAR;
 			}else if(distanceArg.startsWith("far")){
@@ -146,13 +146,13 @@ public class CommandBfTp implements CommandExecutor{
 			ItemMeta itemMeta = itemStack.getItemMeta();
 			itemMeta.setDisplayName(name);
 			itemStack.setItemMeta(itemMeta);
-			components[i++] = new CommandItem(name,biomeName.toLowerCase(),itemStack,"bftp " + biomeName);
+			components[i++] = new CommandItem(name,biomeName.toLowerCase(Locale.US),itemStack,"bftp " + biomeName);
 		}
 		View v = InventoryView.createPaginated("Biome Selector",components,4);
 		UIPlugin.getViewManager().setView(p,v);
 	}
 
-	private static EnumMap<Biome,ItemStack> buildBiomeIconMap(){
+/*	private static EnumMap<Biome,ItemStack> buildBiomeIconMap(){
 		final EnumMap<Biome,ItemStack> m = new EnumMap<>(Biome.class);
 		putMulti(m,new ItemStack(Material.GRASS,1),
 				PLAINS,MUTATED_PLAINS);
@@ -192,6 +192,52 @@ public class CommandBfTp implements CommandExecutor{
 				SWAMPLAND,MUTATED_SWAMPLAND);
 		printMissing(m);
 		return m;
+	}*/
+
+	private static EnumMap<Biome,ItemStack> buildBiomeIconMapNew(){
+		final EnumMap<Biome,ItemStack> m = new EnumMap<>(Biome.class);
+		put(m,stack(Material.GRASS),
+				"PLAINS","MUTATED_PLAINS");
+		put(m,stack(Material.SAPLING),
+				"FOREST","FOREST_HILLS","MUTATED_FOREST");
+		put(m,new ItemStack(Material.SAPLING,1,((short)2)),
+				"BIRCH_FOREST","BIRCH_FOREST_HILLS","MUTATED_BIRCH_FOREST","MUTATED_BIRCH_FOREST_HILLS");
+		put(m,stack(Material.SAND),
+				"DESERT","DESERT_HILLS","MUTATED_DESERT","BEACHES");
+		put(m,new ItemStack(Material.SAPLING,1,((short)4)),
+				"SAVANNA","SAVANNA_ROCK","MUTATED_SAVANNA","MUTATED_SAVANNA_ROCK");
+		put(m,new ItemStack(Material.SAPLING,1,((short)1)),
+				"EXTREME_HILLS_WITH_TREES","MUTATED_EXTREME_HILLS_WITH_TREES","TAIGA","TAIGA_HILLS","MUTATED_REDWOOD_TAIGA","MUTATED_TAIGA","REDWOOD_TAIGA","MUTATED_REDWOOD_TAIGA_HILLS","REDWOOD_TAIGA_HILLS");
+		put(m,stack(Material.SNOW_BLOCK),
+				"COLD_BEACH","TAIGA_COLD","TAIGA_COLD_HILLS","MUTATED_TAIGA_COLD");
+		put(m,stack(Material.ICE),
+				"ICE_FLATS","ICE_MOUNTAINS","MUTATED_ICE_FLATS","FROZEN_OCEAN","FROZEN_RIVER");
+		put(m,stack(Material.WATER_BUCKET),
+				"OCEAN","RIVER","DEEP_OCEAN");
+		put(m,stack(Material.RED_MUSHROOM),
+				"MUSHROOM_ISLAND","MUSHROOM_ISLAND_SHORE");
+		put(m,new ItemStack(Material.SAPLING,1,(short)3),
+				"JUNGLE","JUNGLE_EDGE","JUNGLE_HILLS","MUTATED_JUNGLE","MUTATED_JUNGLE_EDGE");
+		put(m,new ItemStack(Material.STAINED_CLAY,1,(short)1),
+				"MESA","MESA_CLEAR_ROCK","MESA_ROCK","MUTATED_MESA","MUTATED_MESA_CLEAR_ROCK","MUTATED_MESA_ROCK");
+		put(m,stack(Material.STONE),
+				"EXTREME_HILLS","MUTATED_EXTREME_HILLS","SMALLER_EXTREME_HILLS","STONE_BEACH");
+		put(m,new ItemStack(Material.SAPLING,1,(short)5),
+				"ROOFED_FOREST","MUTATED_ROOFED_FOREST");
+		put(m,stack(Material.NETHERRACK),
+				"HELL");
+		put(m,stack(Material.COAL_BLOCK),
+				"SKY");
+		put(m,stack(Material.COAL_BLOCK),
+				"VOID");
+		put(m,stack(Material.SLIME_BLOCK),
+				"SWAMPLAND","MUTATED_SWAMPLAND");
+		printMissing(m);
+		return m;
+	}
+
+	private static ItemStack stack(Material mat){
+		return new ItemStack(mat);
 	}
 
 	private static void printMissing(EnumMap<Biome,ItemStack> m){
@@ -210,9 +256,16 @@ public class CommandBfTp implements CommandExecutor{
 		}
 	}
 
-	private static <V,K> void putMulti(Map<K,V> map,V v,K... ks){
+/*	private static <V,K> void putMulti(Map<K,V> map,V v,K... ks){
 		for(final K k : ks){
 			map.put(k,v);
+		}
+	}*/
+
+	private static <V> void put(Map<Biome,V> map,V v,String... names){
+		Set<Biome> biomes = EnumUtils.getByNames(Biome.class,names);
+		for(final Biome biome : biomes){
+			map.put(biome,v);
 		}
 	}
 }

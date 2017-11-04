@@ -74,8 +74,8 @@ public class BfConfig{
 			final Set<Coord> locs = new HashSet<>(stringList.size());
 //Locations in biome
 			for(final String location : stringList){
-				final String[] i = comma.split(location);
-				locs.add(new Coord(Integer.valueOf(i[0]),Integer.valueOf(i[1])));
+				final String[] xz = comma.split(location);
+				locs.add(new Coord(Integer.parseInt(xz[0]),Integer.parseInt(xz[1])));
 			}
 			wCache.put(Biome.valueOf(biome),locs);
 		}

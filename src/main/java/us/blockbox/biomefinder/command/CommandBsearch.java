@@ -17,9 +17,6 @@ import java.util.Map;
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 public class CommandBsearch implements CommandExecutor{
-
-	private static final DecimalFormat format = new DecimalFormat("0.#");
-
 	private final BiomeFinder plugin;
 	private final BfConfig bfc;
 	private final BfLocale locale;
@@ -56,10 +53,11 @@ public class CommandBsearch implements CommandExecutor{
 		new BukkitRunnable(){
 			@Override
 			public void run(){
+				DecimalFormat format = new DecimalFormat("0.#");
 				for(Map.Entry<Biome,Coord> c : results.entrySet()){
 					final String bName = ChatColor.GREEN + c.getKey().toString() + ": " + ChatColor.RESET;
 					final Coord coord = c.getValue();
-					final String coords = "X " + coord.x + ", Z " + coord.z + ChatColor.GRAY + " (Distance: " + format.format(pCoord.distance(coord)) + ")";
+					final String coords = "X " + coord.x + ", Z " + coord.z + ChatColor.GRAY + " (Distance: " + format.format(pCoord.distance(coord)) + ')';
 					p.sendMessage(bName + coords);
 				}
 			}
