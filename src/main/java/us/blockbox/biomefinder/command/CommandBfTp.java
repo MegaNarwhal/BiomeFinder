@@ -17,9 +17,9 @@ import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 import us.blockbox.uilib.UIPlugin;
 import us.blockbox.uilib.component.CommandItem;
-import us.blockbox.uilib.component.Component;
+import us.blockbox.uilib.api.Component;
 import us.blockbox.uilib.view.InventoryView;
-import us.blockbox.uilib.view.View;
+import us.blockbox.uilib.api.View;
 
 import java.util.*;
 
