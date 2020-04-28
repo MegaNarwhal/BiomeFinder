@@ -1,8 +1,8 @@
 name: ${project.artifactId}
 main: ${project.groupId}.${project.artifactId}
 version: ${project.version}
-softdepend: [Vault,UILib]
-author: MegaNarwhal_
+softdepend: [Vault, UILib, Multiverse-Core, MultiWorld]
+author: Narwhal
 description: Teleport to any biome instantly.
 commands:
   bftp:
