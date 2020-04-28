@@ -105,6 +105,12 @@
                                     <include>org.inventivetalent.spiget-update:bukkit</include>
                                 </includes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.inventivetalent.update.spiget</pattern>
+                                    <shadedPattern>us.blockbox.shade.inventivetalent.update.spiget</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
