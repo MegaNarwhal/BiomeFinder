@@ -10,8 +10,9 @@ commands:
     usage: "/<command> <biome> [keyword] [player]"
     aliases: bfind
   bcachebuild:
-    description: Build a cache of biome locations to greatly speed up biome finding.
+    description: "Build a cache of biome locations. This can cause severe lag during the build process. Necessary for each world you want to use biome search functions in."
     usage: "/<command> <world> ([spawn] | [<x> <z>])"
+    permission: "biomefinder.command.bcachebuild"
   biomereload:
     description: Reload the config.
     usage: /<command>
@@ -41,4 +42,7 @@ permissions:
     default: op
   biomefinder.bsearch:
     description: List nearby biomes.
+    default: op
+  biomefinder.command.bcachebuild:
+    description: Build biome caches.
     default: op

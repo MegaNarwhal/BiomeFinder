@@ -7,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
@@ -35,10 +34,6 @@ public class CommandBCacheBuild implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
-		if(!(sender instanceof ConsoleCommandSender)){
-			sender.sendMessage(locale.getPrefix() + locale.getMessage(COMMAND_NOT_CONSOLE));
-			return true;
-		}
 		if(CacheBuilder.isBuildRunning()){
 			log.info(locale.getMessage(CACHE_BUILD_RUNNING));
 			return true;
