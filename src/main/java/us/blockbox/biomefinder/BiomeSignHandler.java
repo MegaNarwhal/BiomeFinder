@@ -1,6 +1,5 @@
 package us.blockbox.biomefinder;
 
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -14,6 +13,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.blockbox.biomefinder.api.Economy;
+import us.blockbox.biomefinder.api.TeleportManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
@@ -58,20 +59,22 @@ class BiomeSignHandler implements Listener{
 			return;
 		}
 		final double price = getPrice(sign);
-		if(price <= 0 || economy == null){
+		if(price <= 0){
 			tpManager.tpToBiome(p,biome);
 		}else{
-			if(economy.getBalance(p) >= price){
+			if(economy == null){
+				plugin.getLogger().warning("Biome TP sign costs require an economy plugin.");
+			}else if(economy.has(p,price)){
 				if(tpManager.tpToBiome(p,biome)){
 					new BukkitRunnable(){
 						@Override
 						public void run(){
 							if(price > 0){
-								economy.withdrawPlayer(p,price);
+								economy.withdraw(p,price);
 								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),economy.format(price)));
 							}
 						}
-					}.runTaskAsynchronously(plugin);
+					}.runTask(plugin);
 				}
 			}else{
 				p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
@@ -81,12 +84,16 @@ class BiomeSignHandler implements Listener{
 
 	@EventHandler(ignoreCancelled = true)
 	void onSignChange(SignChangeEvent e){
-		if(ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]") && !isValidBiomeSign(e)){
-			e.getBlock().breakNaturally();
+		if(ChatColor.stripColor(e.getLine(0)).trim().equalsIgnoreCase("[BiomeTP]")){
+			if(isValidBiomeSign(e)){
+				e.getPlayer().sendMessage(ChatColor.GREEN + "Biome TP sign created.");
+			}else{
+				e.getBlock().breakNaturally();
+			}
 		}
 	}
 
-	private static boolean isValidBiomeSign(SignChangeEvent e){
+	private boolean isValidBiomeSign(SignChangeEvent e){
 		final int LINE_PRICE = 3;
 
 		final Player p = e.getPlayer();
@@ -107,6 +114,9 @@ class BiomeSignHandler implements Listener{
 			if(parsePrice(priceLine) == null){
 				p.sendMessage(ChatColor.GRAY + "Invalid price.");
 				return false;
+			}
+			if(economy == null){
+				p.sendMessage(ChatColor.YELLOW + "No economy plugin was detected. Signs with costs will not function.");
 			}
 		}
 		return true;

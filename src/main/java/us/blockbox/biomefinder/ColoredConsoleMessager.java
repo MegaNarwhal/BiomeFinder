@@ -1,6 +1,7 @@
 package us.blockbox.biomefinder;
 
 import org.fusesource.jansi.Ansi;
+import us.blockbox.biomefinder.api.ConsoleMessager;
 
 import java.util.logging.Logger;
 

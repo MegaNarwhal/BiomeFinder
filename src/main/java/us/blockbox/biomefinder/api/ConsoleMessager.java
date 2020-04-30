@@ -1,4 +1,4 @@
-package us.blockbox.biomefinder;
+package us.blockbox.biomefinder.api;
 
 import java.util.logging.Logger;
 

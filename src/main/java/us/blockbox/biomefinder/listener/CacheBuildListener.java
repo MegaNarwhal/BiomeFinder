@@ -3,7 +3,7 @@ package us.blockbox.biomefinder.listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import us.blockbox.biomefinder.BfConfig;
-import us.blockbox.biomefinder.ConsoleMessager;
+import us.blockbox.biomefinder.api.ConsoleMessager;
 import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 

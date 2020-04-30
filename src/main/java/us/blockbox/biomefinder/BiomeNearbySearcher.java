@@ -2,6 +2,7 @@ package us.blockbox.biomefinder;
 
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
+import us.blockbox.biomefinder.api.CacheManager;
 
 import java.util.EnumMap;
 import java.util.Map;

@@ -4,6 +4,7 @@ import org.bukkit.plugin.Plugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
+import us.blockbox.biomefinder.api.ConsoleMessager;
 
 import java.util.Objects;
 

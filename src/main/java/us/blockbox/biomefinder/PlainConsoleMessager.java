@@ -1,5 +1,7 @@
 package us.blockbox.biomefinder;
 
+import us.blockbox.biomefinder.api.ConsoleMessager;
+
 import java.util.logging.Logger;
 
 public class PlainConsoleMessager implements ConsoleMessager{

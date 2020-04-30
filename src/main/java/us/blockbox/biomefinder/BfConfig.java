@@ -6,6 +6,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import us.blockbox.biomefinder.api.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.io.File;
@@ -109,7 +110,14 @@ public class BfConfig{
 		confNew.set("points",points);
 		confNew.set("distance",distance);
 //Biomes
-		for(final Map.Entry<Biome,Set<Coord>> bLoc : cacheManager.getCache(w).entrySet()){
+		List<Map.Entry<Biome,Set<Coord>>> entries = new ArrayList<>(cacheManager.getCache(w).entrySet());
+		Collections.sort(entries,new Comparator<Map.Entry<Biome,Set<Coord>>>(){//todo test
+			@Override
+			public int compare(Map.Entry<Biome,Set<Coord>> o1,Map.Entry<Biome,Set<Coord>> o2){
+				return o1.getKey().name().compareTo(o2.getKey().name());
+			}
+		});
+		for(final Map.Entry<Biome,Set<Coord>> bLoc : entries){
 			final String b = bLoc.getKey().toString();
 			final Set<Coord> value = bLoc.getValue();
 			final List<String> locs = new ArrayList<>(value.size());

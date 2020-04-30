@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import us.blockbox.biomefinder.BfConfig;
 import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
-import us.blockbox.biomefinder.CacheManager;
+import us.blockbox.biomefinder.api.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.util.logging.Logger;

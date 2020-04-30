@@ -8,7 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import us.blockbox.biomefinder.*;
+import us.blockbox.biomefinder.BfConfig;
+import us.blockbox.biomefinder.BiomeFinder;
+import us.blockbox.biomefinder.BiomeNearbySearcher;
+import us.blockbox.biomefinder.Coord;
+import us.blockbox.biomefinder.api.CacheManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.text.DecimalFormat;

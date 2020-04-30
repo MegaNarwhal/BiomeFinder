@@ -6,32 +6,29 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.blockbox.biomefinder.api.CacheManager;
+import us.blockbox.biomefinder.api.TeleportManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-public class TeleportManager{
+public class TeleportManagerImpl implements TeleportManager{
 	private static Random RANDOM = new Random();
 	private final CacheManager cacheManager;
 	private final BfLocale locale;
 	private final Set<Material> danger;
 	private final Logger log;
 
-	public TeleportManager(CacheManager cacheManager,BfLocale locale,Set<Material> danger,Logger log){
+	public TeleportManagerImpl(CacheManager cacheManager,BfLocale locale,Set<Material> danger,Logger log){
 		this.cacheManager = Objects.requireNonNull(cacheManager);
 		this.locale = Objects.requireNonNull(locale);
 		this.danger = EnumSet.copyOf(danger);
 		this.log = Objects.requireNonNull(log);
 	}
 
-	public enum LocationPreference{
-		NEAR,
-		FAR,
-		ANY
-	}
-
+	@Override
 	public boolean tpToBiome(CommandSender sender,Player target,Biome b,LocationPreference pref){
 		final World w = target.getWorld();
 		final Set<Coord> locSet = cacheManager.getCache(w).get(b);
@@ -72,10 +69,12 @@ public class TeleportManager{
 		return teleSuccess;
 	}
 
+	@Override
 	public boolean tpToBiome(final Player p,final Biome b,final LocationPreference preference){
 		return tpToBiome(p,p,b,preference);
 	}
 
+	@Override
 	public boolean tpToBiome(final Player p,final Biome b){
 		return tpToBiome(p,b,LocationPreference.ANY);
 	}

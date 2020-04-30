@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.blockbox.biomefinder.api.CacheManager;
 import us.blockbox.biomefinder.event.CacheBuildCompleteEvent;
 import us.blockbox.biomefinder.event.CacheBuildStartEvent;
 
