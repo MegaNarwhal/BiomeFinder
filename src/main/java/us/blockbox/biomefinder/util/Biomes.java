@@ -11,10 +11,11 @@ import java.util.regex.Pattern;
 public enum Biomes{
 	;
 
-	private static final ThreadLocal<Matcher> ignored = new ThreadLocal<Matcher>(){
+	private static final Pattern patternIgnored = Pattern.compile("[_ ]+");
+	private static final ThreadLocal<Matcher> matcherIgnored = new ThreadLocal<Matcher>(){
 		@Override
 		protected Matcher initialValue(){
-			return Pattern.compile("[_ ]+").matcher("");
+			return patternIgnored.matcher("");
 		}
 	};
 	private static final Map<String,Biome> map;
@@ -25,9 +26,7 @@ public enum Biomes{
 			String nameSanitized = sanitize(biome.name());
 			Biome existing = map.get(nameSanitized);
 			if(existing != null){
-				{
-					throw new IllegalStateException("Biome name collision! " + existing.name() + " " + biome.name());
-				}
+				throw new IllegalStateException("Biome name collision! " + existing.name() + " " + biome.name());
 			}
 			map.put(nameSanitized,biome);
 		}
@@ -56,7 +55,7 @@ public enum Biomes{
 	}
 
 	private static Matcher getMatcher(String s){
-		return ignored.get().reset(s);
+		return matcherIgnored.get().reset(s);
 	}
 
 	private static String sanitize(String s){
