@@ -17,6 +17,7 @@ import us.blockbox.biomefinder.api.Economy;
 import us.blockbox.biomefinder.api.TeleportManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
+import us.blockbox.biomefinder.util.Biomes;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -51,7 +52,7 @@ class BiomeSignHandler implements Listener{
 			return;
 		}
 		final Player p = e.getPlayer();
-		final Biome biome = getSignBiome(sign.getLine(2));
+		final Biome biome = Biomes.matchPartial(sign.getLine(2));
 		if(biome == null){
 			return;
 		}
@@ -102,7 +103,7 @@ class BiomeSignHandler implements Listener{
 			p.sendMessage(ChatColor.GRAY + "You don't have permission.");
 			return false;
 		}
-		if(getSignBiome(e.getLine(2)) == null){
+		if(Biomes.matchPartial(e.getLine(2)) == null){
 			p.sendMessage(ChatColor.GRAY + "Invalid biome name.");
 			return false;
 		}
@@ -141,46 +142,5 @@ class BiomeSignHandler implements Listener{
 			return -1;
 		}
 		return price;
-	}
-
-/*	private boolean enoughMoney(final Player p,final Sign sign){
-		if(sign.getLine(3).trim().equals("")){
-			return true;
-		}
-		if(econ == null){
-			plugin.getLogger().warning("Sign costs are not working properly. Make sure you have an economy plugin enabled.");
-			return false;
-		}
-		final Double price = parsePrice(sign.getLine(3));
-		if(price == null){
-			plugin.getLogger().warning("Incorrectly formatted teleport price on sign at " + sign.getLocation().toString());
-			return false;
-		}
-		if(econ.getBalance(p) >= price){
-			return true;
-		}else{
-			p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
-		}
-		return false;
-	}*/
-
-	static Biome getSignBiome(String signBiome){
-		if(signBiome == null || signBiome.trim().isEmpty()){
-			return null;
-		}
-		signBiome = signBiome.toUpperCase();
-		Biome biome = BiomeFinder.parseBiome(signBiome);
-		if(biome == null){
-			for(Biome b : Biome.values()){
-				if(b.toString().startsWith(signBiome) || b.toString().replace("_","").startsWith(signBiome)){
-					biome = b;
-					break;
-				}
-			}
-			if(biome == null){
-				return null;
-			}
-		}
-		return biome;
 	}
 }

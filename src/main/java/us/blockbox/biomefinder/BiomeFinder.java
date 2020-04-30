@@ -2,7 +2,6 @@ package us.blockbox.biomefinder;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.blockbox.biomefinder.api.CacheManager;
@@ -19,14 +18,10 @@ import us.blockbox.biomefinder.listener.CacheBuildListener;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.util.EnumUtils;
 
-import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class BiomeFinder extends JavaPlugin{
-	private static final Matcher UNDERSCORE = Pattern.compile("_").matcher("");
 	public final String prefix = ChatColor.GREEN + "BFinder" + ChatColor.DARK_GRAY + "> ";
 	private CacheManager cacheManager;
 	private static BiomeFinder plugin;
@@ -109,20 +104,6 @@ public final class BiomeFinder extends JavaPlugin{
 			return null;
 		}
 		return new VaultEconomyImpl(provider);
-	}
-
-	public static Biome parseBiome(String biome){
-		String biomeUppercase = biome.toUpperCase(Locale.US);
-		try{
-			return Biome.valueOf(biomeUppercase);
-		}catch(IllegalArgumentException e){
-			for(final Biome b1 : Biome.values()){
-				if(UNDERSCORE.reset(b1.name()).replaceAll("").equals(biomeUppercase)){
-					return b1;
-				}
-			}
-			return null;
-		}
 	}
 
 	public CacheManager getCacheManager(){

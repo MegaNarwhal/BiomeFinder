@@ -13,10 +13,9 @@ import us.blockbox.biomefinder.api.TeleportManager;
 import us.blockbox.biomefinder.api.TeleportManager.LocationPreference;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
+import us.blockbox.biomefinder.util.Biomes;
 
 import java.util.Locale;
-
-import static us.blockbox.biomefinder.BiomeFinder.parseBiome;
 
 public class CommandBfTp implements CommandExecutor{
 	private final BfConfig bfc;
@@ -57,7 +56,7 @@ public class CommandBfTp implements CommandExecutor{
 			sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 			return true;
 		}
-		final Biome b = parseBiome(args[0]);
+		final Biome b = Biomes.matchPartial(args[0]);
 		if(b == null){
 			sender.sendMessage(locale.getPrefix() + locale.getMessage(BfMessage.BIOME_NAME_UNSPECIFIED));
 		}else{
