@@ -55,7 +55,7 @@ public final class BiomeFinder extends JavaPlugin{
 	private void init(){
 		Logger log = getLogger();
 		plugin = this;
-		Set<Material> danger = EnumUtils.getByNames(Material.class,"FIRE","LAVA","STATIONARY_LAVA","CACTUS","MAGMA");
+		Set<Material> danger = EnumUtils.getByNames(Material.class,"FIRE","LAVA","STATIONARY_LAVA","CACTUS","MAGMA","MAGMA_BLOCK");
 		log.info("Danger materials: " + danger);
 		bfc = new BfConfig(this);
 		bfc.loadConfig();
