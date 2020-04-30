@@ -18,6 +18,7 @@ import us.blockbox.biomefinder.api.TeleportManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 class BiomeSignHandler implements Listener{
@@ -54,7 +55,7 @@ class BiomeSignHandler implements Listener{
 		if(biome == null){
 			return;
 		}
-		if(!p.hasPermission("biomefinder.sign." + biome.toString().toLowerCase())){
+		if(!p.hasPermission("biomefinder.sign.all") && !p.hasPermission("biomefinder.sign." + biome.toString().toLowerCase(Locale.US))){
 			p.sendMessage(locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
 			return;
 		}
@@ -108,7 +109,7 @@ class BiomeSignHandler implements Listener{
 		final String priceLine = e.getLine(LINE_PRICE);
 		if(!priceLine.trim().isEmpty()){
 			if(!p.hasPermission("biomefinder.create.cost")){
-				p.sendMessage(ChatColor.GRAY + "You don't have permission.");
+				p.sendMessage(ChatColor.GRAY + "You don't have permission to set a teleport price.");
 				return false;
 			}
 			if(parsePrice(priceLine) == null){

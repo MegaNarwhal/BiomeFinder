@@ -46,3 +46,6 @@ permissions:
   biomefinder.command.bcachebuild:
     description: Build biome caches.
     default: op
+  biomefinder.sign.all:
+    description: Allow using a biome TP sign for any biome.
+    default: op

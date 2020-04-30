@@ -111,7 +111,7 @@ public class BfConfig{
 		confNew.set("distance",distance);
 //Biomes
 		List<Map.Entry<Biome,Set<Coord>>> entries = new ArrayList<>(cacheManager.getCache(w).entrySet());
-		Collections.sort(entries,new Comparator<Map.Entry<Biome,Set<Coord>>>(){//todo test
+		Collections.sort(entries,new Comparator<Map.Entry<Biome,Set<Coord>>>(){
 			@Override
 			public int compare(Map.Entry<Biome,Set<Coord>> o1,Map.Entry<Biome,Set<Coord>> o2){
 				return o1.getKey().name().compareTo(o2.getKey().name());
