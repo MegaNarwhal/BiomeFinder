@@ -1,6 +1,7 @@
 package us.blockbox.biomefinder.locale;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.WordUtils;
@@ -16,40 +17,38 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class BfLocale{
 	private static final Pattern UNDERSCORES = Pattern.compile("_");
-	private final String prefix;
 	private final String localeName;
-	private final Map<BfMessage,String> messages;
-//	private final EnumMap<Biome,String> friendlyNames = new EnumMap<>(Biome.class);//todo
+	private final ImmutableMap<BfMessage,String> messages;
 
 	public String getLocaleName(){
 		return localeName;
 	}
 
-	private BfLocale(String prefix,String localeName,Map<BfMessage,String> messages){
-		this.prefix = prefix;
-		this.localeName = localeName;
-		this.messages = messages;
+	private BfLocale(String localeName,ImmutableMap<BfMessage,String> messages){
+		this.localeName = Objects.requireNonNull(localeName);
+		this.messages = Objects.requireNonNull(messages);
 	}
 
 	public String getPrefix(){
-		return prefix;
+		return getMessage(BfMessage.PLUGIN_PREFIX);
 	}
 
-	public static BfLocale create(Plugin plugin,String prefix,String localeName,File file) throws IOException, IllegalArgumentException{
+	public static BfLocale create(Plugin plugin,String localeName,File file) throws IOException, IllegalArgumentException{
 		if(!file.exists() || !file.isFile()){
 			plugin.saveResource(file.getName(),false);
 		}
 		final FileConfiguration config = getConfigWithDefaults(plugin,file);
 		String name = localeName == null ? file.getName().replace(".yml","") : localeName;
-		Map<BfMessage,String> messageMap = buildMap(config);
+		ImmutableMap<BfMessage,String> messageMap = buildMap(config);
 		checkNewOptions(plugin.getLogger(),config);
-		return new BfLocale(prefix,name,messageMap);
+		return new BfLocale(name,messageMap);
 	}
 
 	private static FileConfiguration getConfigWithDefaults(Plugin plugin,File file){
@@ -59,12 +58,13 @@ public class BfLocale{
 		return config;
 	}
 
-	private static Map<BfMessage,String> buildMap(FileConfiguration config){
+	private static ImmutableMap<BfMessage,String> buildMap(FileConfiguration config){
 		Map<BfMessage,String> messages = new EnumMap<>(BfMessage.class);
 		for(BfMessage m : BfMessage.values()){
 			final String text = config.getString(m.name());
 			messages.put(m,ChatColor.translateAlternateColorCodes('&',text));
 		}
+		//noinspection UnstableApiUsage
 		return Maps.immutableEnumMap(messages);
 	}
 

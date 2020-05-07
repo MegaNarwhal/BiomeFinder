@@ -13,6 +13,7 @@ import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.BiomeNearbySearcher;
 import us.blockbox.biomefinder.Coord;
 import us.blockbox.biomefinder.api.CacheManager;
+import us.blockbox.biomefinder.api.LocaleManager;
 import us.blockbox.biomefinder.locale.BfLocale;
 
 import java.text.DecimalFormat;
@@ -23,37 +24,37 @@ import static us.blockbox.biomefinder.locale.BfMessage.*;
 public class CommandBsearch implements CommandExecutor{
 	private final BiomeFinder plugin;
 	private final BfConfig bfc;
-	private final BfLocale locale;
+	private final LocaleManager lm;
 	private final CacheManager cacheManager;
 
-	public CommandBsearch(BiomeFinder plugin){
+	public CommandBsearch(BiomeFinder plugin,BfConfig bfc,LocaleManager lm,CacheManager cacheManager){
 		this.plugin = plugin;
-		bfc = plugin.getBfConfig();
-		locale = bfc.getLocale();
-		cacheManager = plugin.getCacheManager();
+		this.bfc = bfc;
+		this.lm = lm;
+		this.cacheManager = cacheManager;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command command,String s,String[] strings){
 		if(!(sender instanceof Player)){
-			final String message = BfLocale.format(locale.getPrefix() + locale.getMessage(COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled());
+			final String message = BfLocale.format(lm.getPrefix() + lm.get(COMMAND_NOT_PLAYER),!bfc.isLogColorEnabled());
 			sender.sendMessage(message);
 			return true;
 		}
 		if(!sender.hasPermission("biomefinder.bsearch")){
-			sender.sendMessage(locale.getPrefix() + locale.getMessage(PLAYER_NO_PERMISSION));
+			sender.sendMessage(lm.getPrefix() + lm.get(PLAYER_NO_PERMISSION));
 			return true;
 		}
 		final Player p = (Player)sender;
 		if(!cacheManager.hasCache(p.getWorld())){
-			sender.sendMessage(locale.getMessage(WORLD_INDEX_MISSING));
+			sender.sendMessage(lm.get(WORLD_INDEX_MISSING));
 			return true;
 		}
 		final Location pLoc = p.getLocation();
 		final BiomeNearbySearcher searcher = new BiomeNearbySearcher(pLoc);
 		final Map<Biome,Coord> results = searcher.search();
 		final Coord pCoord = new Coord(pLoc);
-		sender.sendMessage(locale.getMessage(NEARBY_HEADER));
+		sender.sendMessage(lm.get(NEARBY_HEADER));
 		new BukkitRunnable(){
 			@Override
 			public void run(){

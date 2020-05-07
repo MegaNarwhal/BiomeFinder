@@ -7,44 +7,44 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import us.blockbox.biomefinder.BfConfig;
-import us.blockbox.biomefinder.BiomeFinder;
 import us.blockbox.biomefinder.CacheBuilder;
 import us.blockbox.biomefinder.api.CacheManager;
-import us.blockbox.biomefinder.locale.BfLocale;
+import us.blockbox.biomefinder.api.LocaleManager;
 
 import java.util.logging.Logger;
 
 import static us.blockbox.biomefinder.locale.BfMessage.*;
 
 public class CommandBCacheBuild implements CommandExecutor{
-	private final BiomeFinder plugin;
+	private final Plugin plugin;
 	private final Logger log;
 	private final CacheManager cacheManager;
 	private final BfConfig bfc;
-	private final BfLocale locale;
+	private final LocaleManager lm;
 
-	public CommandBCacheBuild(BiomeFinder plugin){
+	public CommandBCacheBuild(Plugin plugin,Logger log,CacheManager cacheManager,BfConfig bfc,LocaleManager lm){
 		this.plugin = plugin;
-		log = plugin.getLogger();
-		cacheManager = plugin.getCacheManager();
-		bfc = plugin.getBfConfig();
-		locale = bfc.getLocale();
+		this.log = log;
+		this.cacheManager = cacheManager;
+		this.bfc = bfc;
+		this.lm = lm;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args){
 		if(CacheBuilder.isBuildRunning()){
-			log.info(locale.getMessage(CACHE_BUILD_RUNNING));
+			log.info(lm.get(CACHE_BUILD_RUNNING));
 			return true;
 		}
 		if(args.length < 1){
-			log.info(locale.getMessage(WORLD_NAME_UNSPECIFIED));
+			log.info(lm.get(WORLD_NAME_UNSPECIFIED));
 			return false;
 		}
 		World world = Bukkit.getWorld(args[0]);
 		if(world == null){
-			log.info(locale.getMessage(WORLD_NAME_INVALID));
+			log.info(lm.get(WORLD_NAME_INVALID));
 			return true;
 		}
 		if(cacheManager.hasCache(world) && bfc.getRecordedPoints(world) >= 512){

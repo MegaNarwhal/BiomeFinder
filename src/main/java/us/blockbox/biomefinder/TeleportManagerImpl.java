@@ -7,8 +7,8 @@ import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import us.blockbox.biomefinder.api.CacheManager;
+import us.blockbox.biomefinder.api.LocaleManager;
 import us.blockbox.biomefinder.api.TeleportManager;
-import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 
 import java.util.*;
@@ -17,13 +17,13 @@ import java.util.logging.Logger;
 public class TeleportManagerImpl implements TeleportManager{
 	private static Random RANDOM = new Random();
 	private final CacheManager cacheManager;
-	private final BfLocale locale;
+	private final LocaleManager lm;
 	private final Set<Material> danger;
 	private final Logger log;
 
-	public TeleportManagerImpl(CacheManager cacheManager,BfLocale locale,Set<Material> danger,Logger log){
+	public TeleportManagerImpl(CacheManager cacheManager,LocaleManager lm,Set<Material> danger,Logger log){
 		this.cacheManager = Objects.requireNonNull(cacheManager);
-		this.locale = Objects.requireNonNull(locale);
+		this.lm = Objects.requireNonNull(lm);
 		this.danger = EnumSet.copyOf(danger);
 		this.log = Objects.requireNonNull(log);
 	}
@@ -34,7 +34,7 @@ public class TeleportManagerImpl implements TeleportManager{
 		final Set<Coord> locSet = cacheManager.getCache(w).get(b);
 
 		if(locSet == null || locSet.isEmpty()){
-			sender.sendMessage(locale.getPrefix() + String.format(locale.getMessage(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
+			sender.sendMessage(lm.getPrefix() + String.format(lm.get(BfMessage.BIOME_LOCATIONS_MISSING),b.toString()));
 			return false;
 		}
 
@@ -48,7 +48,7 @@ public class TeleportManagerImpl implements TeleportManager{
 		final Location l = pickSafe(w,locList,pref != LocationPreference.ANY); //todo don't spawn players into side of block
 
 		if(l == null){
-			sender.sendMessage(locale.getMessage(BfMessage.BIOME_LOCATIONS_UNSAFE));
+			sender.sendMessage(lm.get(BfMessage.BIOME_LOCATIONS_UNSAFE));
 			return false;
 		}
 /*		p.setInvulnerable(true);
@@ -60,7 +60,7 @@ public class TeleportManagerImpl implements TeleportManager{
 		}.runTaskLater(plugin,40L);*/
 		final boolean teleSuccess = target.teleport(l);
 		if(teleSuccess){
-			String msg = locale.getPrefix() + String.format(locale.getMessage(BfMessage.PLAYER_TELEPORTED),locale.getFriendlyName(b),l.getBlockX(),l.getBlockZ());
+			String msg = lm.getPrefix() + String.format(lm.get(BfMessage.PLAYER_TELEPORTED),lm.getBiome(b),l.getBlockX(),l.getBlockZ());
 			target.sendMessage(msg);
 			if(sender != target){
 				sender.sendMessage(msg);

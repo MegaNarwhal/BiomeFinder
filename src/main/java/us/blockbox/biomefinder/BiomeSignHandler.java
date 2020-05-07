@@ -14,8 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.blockbox.biomefinder.api.Economy;
+import us.blockbox.biomefinder.api.LocaleManager;
 import us.blockbox.biomefinder.api.TeleportManager;
-import us.blockbox.biomefinder.locale.BfLocale;
 import us.blockbox.biomefinder.locale.BfMessage;
 import us.blockbox.biomefinder.util.Biomes;
 
@@ -27,13 +27,13 @@ class BiomeSignHandler implements Listener{
 	private static final Pattern nonDecimal = Pattern.compile("[^0-9.]");
 	private static final String SIGN_FIRST_LINE = "[BiomeTP]";
 	private final Plugin plugin;
-	private final BfLocale locale;
+	private final LocaleManager lm;
 	private final Economy economy;
 	private final TeleportManager tpManager;
 
-	BiomeSignHandler(Plugin plugin,BfLocale locale,Economy economy,TeleportManager tpManager){
+	BiomeSignHandler(Plugin plugin,LocaleManager lm,Economy economy,TeleportManager tpManager){
 		this.plugin = plugin;
-		this.locale = locale;
+		this.lm = lm;
 		this.economy = economy;
 		this.tpManager = tpManager;
 	}
@@ -57,7 +57,7 @@ class BiomeSignHandler implements Listener{
 			return;
 		}
 		if(!p.hasPermission("biomefinder.sign.all") && !p.hasPermission("biomefinder.sign." + biome.toString().toLowerCase(Locale.US))){
-			p.sendMessage(locale.getMessage(BfMessage.PLAYER_NO_PERMISSION));
+			p.sendMessage(lm.get(BfMessage.PLAYER_NO_PERMISSION));
 			return;
 		}
 		final double price = getPrice(sign);
@@ -73,13 +73,13 @@ class BiomeSignHandler implements Listener{
 						public void run(){
 							if(price > 0){
 								economy.withdraw(p,price);
-								p.sendMessage(String.format(locale.getMessage(BfMessage.SIGN_ECON_CHARGED),economy.format(price)));
+								p.sendMessage(String.format(lm.get(BfMessage.SIGN_ECON_CHARGED),economy.format(price)));
 							}
 						}
 					}.runTask(plugin);
 				}
 			}else{
-				p.sendMessage(locale.getMessage(BfMessage.SIGN_ECON_FAILED));
+				p.sendMessage(lm.get(BfMessage.SIGN_ECON_FAILED));
 			}
 		}
 	}
